@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Archeon Zero — разработчик, инженер сознания, автор цикла DevCrm о CRM на WPF, обзоров нейросетей 2026. Выбор шаблона оформления.">
+    <title>Archeon Zero — точка сборки (выбор шаблона)</title>
+    <link rel="stylesheet" href="themes.css">
+</head>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<div class="theme-switcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link is-active" href="#">Главная</a>
+            <a class="nav-link" href="#proekty">Проекты</a>
+            <a class="nav-link" href="#stati">Статьи</a>
+            <a class="nav-link" href="#ploshadki">Площадки</a>
+            <a class="nav-link" href="#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+
+<main class="site-main" id="main">
+    <div class="container">
+        <section class="hero">
+            <div class="hero-main">
+                <span class="badge">пространство</span>
+                <h1 class="hero-title">Точка <span class="h-accent">сборки</span>, а не визитка.</h1>
+                <p class="hero-excerpt">
+                    Это место — не портфолио, не блог, не визитка. Здесь собираются слои:
+                    код, текст, наблюдения, музыка, состояния. Ничего лишнего — всё,
+                    что есть, имеет вес.
+                </p>
+                <div class="hero-links">
+                    <a href="#proekty">Проекты →</a>
+                    <a class="ghost" href="#stati">Статьи</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="proekty">
+            <div class="section-head">
+                <h2><span>✦</span> Проекты</h2>
+                <a class="section-link" href="https://github.com/ArcheonZero" target="_blank">GitHub →</a>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-tag">Desktop · WPF · MVVM</div>
+                    <div class="card-mark">CRM</div>
+                    <h3>CRM Archeonzero</h3>
+                    <p>Полноценная desktop-система управления клиентами, задачами и взаимодействиями. SQLite / PostgreSQL / MS SQL, экспорт, импорт, Telegram-уведомления.</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Web · ASP.NET Core</div>
+                    <div class="card-mark">WEB</div>
+                    <h3>CRM Web</h3>
+                    <p>Веб-версия CRM: контроллеры, Razor, EF Core. Те же клиенты, задачи, чат и дашборд — но в браузере.</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Mobile · MAUI + Blazor</div>
+                    <div class="card-mark">MOB</div>
+                    <h3>Mobile CRM</h3>
+                    <p>Мобильная ветка CRM на MAUI + Blazor Hybrid (.NET). Плюс эксперименты на Kotlin и Xamarin для сравнения стеков.</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">PHP · свой MVC</div>
+                    <div class="card-mark">CMS</div>
+                    <h3>Archeonzero CMS</h3>
+                    <p>Коробочная CMS для новостного портала: материалы, рубрики, теги, медиатека, SEO, мастер установки. Одна установка — один сайт.</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Инструменты · Python</div>
+                    <div class="card-mark">TXT</div>
+                    <h3>Инструменты для архива</h3>
+                    <p>PartitionTxt (разделение файлов), JSON→TXT (конвертер переписок), DocConverter (TXT ⇄ MD ⇄ DOCX), поиск и очистка ключевых слов.</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Задел · LLM</div>
+                    <div class="card-mark">ROUT</div>
+                    <h3>LLMRouter</h3>
+                    <p>Многопровайдерный роутер к языковым моделям — задел на собственный прокси поверх DeepSeek / Gemini / YandexGPT / Groq.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="stati">
+            <div class="section-head">
+                <h2><span>✦</span> Статьи</h2>
+                <a class="section-link" href="#ploshadki">Площадки →</a>
+            </div>
+            <p class="section-lead">
+                Цикл <strong>DevCrm</strong> — как делалась собственная CRM: от идеи до прототипа,
+                архитектура, стили, чат и «почему не редактируются контакты». Серии 00–10.
+                Плюс цикл <strong>Android</strong> и обзоры нейросетей 2026.
+            </p>
+            <div class="two-col">
+                <div class="side-block">
+                    <h3 class="side-title"><span>✦</span> Цикл DevCrm (00–10)</h3>
+                    <a href="https://teletype.in/@archeonzero/yioxYXZBvQz" target="_blank"><strong>00</strong> Как делали CRM на WPF: от идеи до прототипа</a>
+                    <a href="https://teletype.in/@archeonzero/NYn6eovYdSi" target="_blank"><strong>01</strong> Почему не редактируются контакты?</a>
+                    <a href="https://teletype.in/@archeonzero/5w-wfACBNzI" target="_blank"><strong>02</strong> Архитектура, слои и первые модели</a>
+                    <a href="https://teletype.in/@archeonzero/mnDoAuTCnA_" target="_blank"><strong>03</strong> Корзина и мягкое удаление</a>
+                    <a href="https://teletype.in/@archeonzero/9GYsgd7nSAm" target="_blank"><strong>04</strong> Пользователи и роли</a>
+                    <a href="https://teletype.in/@archeonzero/TszNycO_oXQ" target="_blank"><strong>05</strong> «Кандовенько выглядит»</a>
+                    <a href="https://teletype.in/@archeonzero/7OhnHwkPCkF" target="_blank"><strong>06</strong> «Верхняя панель ушла к себе!»</a>
+                    <a href="https://teletype.in/@archeonzero/HAHIemNcfxP" target="_blank"><strong>07</strong> Чат в CRM</a>
+                    <a href="https://teletype.in/@archeonzero/J7P7gLMcQQA" target="_blank"><strong>08</strong> Когда MainViewModel разросся до 1300+ строк</a>
+                    <a href="https://teletype.in/@archeonzero/2279Vq-rrWZ" target="_blank"><strong>09</strong> Стили WPF: ResourceDictionary</a>
+                    <a href="https://teletype.in/@archeonzero/2fcmL1RhnBR" target="_blank"><strong>10</strong> Как поставить точку в своей CRM</a>
+                </div>
+                <div>
+                    <div class="side-block" style="margin-bottom: 22px;">
+                        <h3 class="side-title"><span>✦</span> Нейросети и Android</h3>
+                        <a href="https://teletype.in/@archeonzero/w3L0vOgLNsh" target="_blank"><strong>Android 009</strong> Google ограничивает установку APK</a>
+                        <a href="https://teletype.in/@archeonzero/QPNcxhS3Hdh" target="_blank"><strong>Разбор</strong> DeepSeek, MultiTool, OpenClaw, AutoClaw</a>
+                        <a href="https://teletype.in/@archeonzero/TKkJXqqqwgD" target="_blank"><strong>Нейросети 2026</strong> какую выбрать под задачу</a>
+                        <a href="https://teletype.in/@archeonzero/tzRy6yAz0FA" target="_blank"><strong>Qwen 2026</strong> работа с файлами, кодом и изображениями</a>
+                    </div>
+                    <div class="side-block">
+                        <h3 class="side-title"><span>✦</span> Тексты</h3>
+                        <a href="ArcheonZreborn.html"><strong>«Археон Z перерождение»</strong> — начало повести. Фрагмент.</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="ploshadki">
+            <div class="section-head">
+                <h2><span>✦</span> Площадки</h2>
+            </div>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-tag">Контент</div>
+                    <h3>Дзен</h3>
+                    <p><a class="card-link" href="https://dzen.ru/archeonzero" target="_blank">dzen.ru/archeonzero</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Контент</div>
+                    <h3>vc.ru</h3>
+                    <p><a class="card-link" href="https://vc.ru/id6054863" target="_blank">vc.ru/id6054863</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Контент</div>
+                    <h3>Teletype</h3>
+                    <p><a class="card-link" href="https://teletype.in/@archeonzero" target="_blank">teletype.in/@archeonzero</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Контент</div>
+                    <h3>Blogger</h3>
+                    <p><a class="card-link" href="https://archeonzero.blogspot.com/" target="_blank">archeonzero.blogspot.com</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Соцсеть</div>
+                    <h3>VK</h3>
+                    <p><a class="card-link" href="https://vk.ru/archeonzeroclub" target="_blank">vk.ru/archeonzeroclub</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Код</div>
+                    <h3>GitHub</h3>
+                    <p><a class="card-link" href="https://github.com/ArcheonZero" target="_blank">github.com/ArcheonZero</a></p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Независимый блог</div>
+                    <h3>ЖЖ (LiveJournal)</h3>
+                    <p>На стадии запуска</p>
+                </div>
+                <div class="card">
+                    <div class="card-tag">Независимый блог</div>
+                    <h3>LiveInternet</h3>
+                    <p>На стадии запуска</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="kontakty">
+            <div class="section-head">
+                <h2><span>✦</span> Контакты</h2>
+            </div>
+            <div class="two-col">
+                <div class="side-block">
+                    <h3 class="side-title"><span>✦</span> Почта</h3>
+                    <a href="mailto:postmaster@archeonzero.ru"><strong>✉</strong> postmaster@archeonzero.ru</a>
+                </div>
+                <div class="side-block">
+                    <h3 class="side-title"><span>✦</span> Сети</h3>
+                    <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+                    <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+                    <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+                    <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+                    <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2>Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="#proekty">Проекты</a>
+            <a href="#stati">Статьи</a>
+            <a href="#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['term', 'paper', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
