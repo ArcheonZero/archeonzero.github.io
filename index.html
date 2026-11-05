@@ -11,7 +11,8 @@
 <a class="skip-link" href="#main">К содержанию</a>
 
 <!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
-<div class="theme-switcher" role="group" aria-label="Выбор шаблона">
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
     <span class="ts-label">оформление</span>
     <button data-theme-btn="term">терминал</button>
     <button data-theme-btn="paper">редакция</button>
@@ -197,11 +198,11 @@
         <section class="hero">
             <div class="hero-main">
                 <span class="badge">пространство</span>
-                <h1 class="hero-title">Точка <span class="h-accent">сборки</span>, а не визитка.</h1>
+                <h1 class="hero-title">Точка <span class="h-accent">сборки</span></h1>
                 <p class="hero-excerpt">
-                    Это место — не портфолио, не блог, не визитка. Здесь собираются слои:
-                    код, текст, наблюдения, музыка, состояния. Ничего лишнего — всё,
-                    что есть, имеет вес.
+                    Здесь собирается и то, что уже есть, и то, что только складывается:
+                    портфолио, блог, визитка — в одном слое. Код, текст, наблюдения,
+                    музыка, состояния. Всё, что здесь, — с весом, ничего случайного.
                 </p>
                 <div class="hero-links">
                     <a href="#proekty">Проекты →</a>
@@ -530,6 +531,14 @@
             var l = e.currentTarget.getAttribute('data-logo-btn');
             applyLogo(l);
             try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
     }
 })();

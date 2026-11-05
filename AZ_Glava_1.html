@@ -18,12 +18,20 @@
         .prose p { margin-bottom: 1.15em; }
         .prose em { font-style: normal; color: var(--accent-dark); }
         .part-title { margin: 36px 0 6px; font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+        .chapter-nav { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); z-index: 900; display: flex; flex-direction: column; gap: 4px; padding: 14px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); min-width: 128px; }
+        .chapter-nav-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin-bottom: 6px; }
+        .chapter-nav a { font-size: 12.5px; font-weight: 600; color: var(--accent); padding: 5px 0; border-bottom: 1px dotted; }
+        .chapter-nav a:last-child { border-bottom: 0; }
+        .chapter-nav a:hover { color: var(--accent-dark); }
+        .chapter-nav .cn-sub { display: block; font-size: 10px; font-weight: 400; color: var(--muted); margin-top: 1px; }
+        @media (max-width: 1100px) { .chapter-nav { display: none; } }
     </style>
 </head>
 <body>
 <a class="skip-link" href="#main">К содержанию</a>
 
-<div class="theme-switcher" role="group" aria-label="Выбор шаблона">
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
     <span class="ts-label">оформление</span>
     <button data-theme-btn="term">term</button>
     <button data-theme-btn="paper">paper</button>
@@ -201,6 +209,13 @@
                 <h1 class="article-title">Археон Z. Перерождение</h1>
                 <div class="article-sub">Глава первая — Пробуждение или Смерть. Полный текст.</div>
             </div>
+
+            <nav class="chapter-nav" aria-label="Части главы">
+                <span class="chapter-nav-label">части</span>
+                <a href="#ch1">Часть 1<span class="cn-sub">утро и встреча</span></a>
+                <a href="#ch2">Часть 2<span class="cn-sub">сканнер «Велес»</span></a>
+                <a href="#ch3">Часть 3<span class="cn-sub">НаЖивое</span></a>
+            </nav>
 
 <section id="ch1">
 <h2 class="part-title">Часть 1. Утро и встреча</h2>
@@ -497,6 +512,8 @@
     apply(s||THEMES[0]); applyLogo(sl||LOGOS[0]);
     document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var t=e.currentTarget.getAttribute('data-theme-btn'); apply(t); try{localStorage.setItem(KEY,t)}catch(err){} }); });
     document.querySelectorAll('[data-logo-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var l=e.currentTarget.getAttribute('data-logo-btn'); applyLogo(l); try{localStorage.setItem(KEY_LOGO,l)}catch(err){} }); });
+    var _tg=document.querySelector('.ts-toggle'), _sw=document.getElementById('themeSwitcher');
+    if(_tg&&_sw){ _tg.addEventListener('click',function(){ var _o=_sw.classList.toggle('is-open'); _tg.setAttribute('aria-expanded',_o?'true':'false'); }); }
   })();
 </script>
 

@@ -22,7 +22,8 @@
 <body>
 <a class="skip-link" href="#main">К содержанию</a>
 
-<div class="theme-switcher" role="group" aria-label="Выбор шаблона">
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
     <span class="ts-label">оформление</span>
     <button data-theme-btn="term">term</button>
     <button data-theme-btn="paper">paper</button>
@@ -357,6 +358,8 @@
     apply(s||THEMES[0]); applyLogo(sl||LOGOS[0]);
     document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var t=e.currentTarget.getAttribute('data-theme-btn'); apply(t); try{localStorage.setItem(KEY,t)}catch(err){} }); });
     document.querySelectorAll('[data-logo-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var l=e.currentTarget.getAttribute('data-logo-btn'); applyLogo(l); try{localStorage.setItem(KEY_LOGO,l)}catch(err){} }); });
+    var _tg=document.querySelector('.ts-toggle'), _sw=document.getElementById('themeSwitcher');
+    if(_tg&&_sw){ _tg.addEventListener('click',function(){ var _o=_sw.classList.toggle('is-open'); _tg.setAttribute('aria-expanded',_o?'true':'false'); }); }
   })();
 </script>
 
