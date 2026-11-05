@@ -30,31 +30,31 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* Кнопка-вкладка сверху/слева — открывает панель по клику */
 .ts-toggle {
     position: fixed; left: 14px; top: 14px; z-index: 1001;
-    border: 0; cursor: pointer; width: 34px; height: 34px; border-radius: 10px;
+    cursor: pointer; width: 88px; height: 34px; border-radius: 6px;
     font-size: 16px; line-height: 1; display: grid; place-items: center;
-    padding: 0;
+    padding: 0; border-width: 1px; border-style: solid;
 }
 .theme-switcher {
     position: fixed; left: 14px; top: 56px; z-index: 1000;
-    display: none; flex-direction: column; align-items: stretch; gap: 6px;
-    padding: 10px 8px; width: 124px; box-sizing: border-box;
+    display: none; flex-direction: column; align-items: stretch; gap: 5px;
+    padding: 10px 8px; width: 148px; max-width: 148px; box-sizing: border-box;
     font-size: 11px; backdrop-filter: blur(6px);
 }
 .theme-switcher.is-open { display: flex; }
 .theme-switcher button {
-    border: 0; padding: 6px 6px; border-radius: 8px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 600; text-align: center;
+    border: 0; padding: 6px 6px; border-radius: 7px; cursor: pointer; font: inherit; font-size: 11px; font-weight: 600; text-align: center; width: 100%; max-width: 100%; box-sizing: border-box; word-break: normal; overflow-wrap: break-word; white-space: normal;
 }
-.theme-switcher .ts-label { font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 9px; text-align: center; }
-.theme-switcher .ts-note { font-size: 9px; opacity: .6; text-align: center; }
+.theme-switcher .ts-label { font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 9px; text-align: center; width: 100%; }
+.theme-switcher .ts-note { font-size: 9px; opacity: .6; text-align: center; width: 100%; }
 .theme-switcher .ts-sep { width: 100%; height: 1px; background: currentColor; opacity: .25; margin: 2px 0; }
 .logo-form { display: none; }
 
 /* Контрастная кнопка-вкладка (видна на любом фоне), темы переопределяют при желании */
-.ts-toggle { background: rgba(0,0,0,.55); color: #fff; }
-body[data-theme="paper"] .ts-toggle { background: rgba(0,0,0,.12); color: #111; }
-body[data-theme="soft"] .ts-toggle { background: rgba(0,0,0,.10); color: #111; }
-body[data-theme="amber"] .ts-toggle { background: rgba(0,0,0,.16); color: #1a1410; }
-body[data-theme="term"] .ts-toggle { background: #242424; color: #7bc47f; }
+.ts-toggle { background: rgba(0,0,0,.82); color: #fff; border-color: rgba(255,255,255,.5); }
+body[data-theme="paper"] .ts-toggle { background: rgba(255,255,255,.75); color: #111; border-color: rgba(0,0,0,.3); }
+body[data-theme="soft"] .ts-toggle { background: rgba(255,255,255,.72); color: #111; border-color: rgba(0,0,0,.28); }
+body[data-theme="amber"] .ts-toggle { background: rgba(255,255,255,.7); color: #1a1410; border-color: rgba(0,0,0,.32); }
+body[data-theme="term"] .ts-toggle { background: #242424; color: #7bc47f; border-color: #3a3a3a; }
 
 /* ===== Общие структурные блоки (пишутся во всех темах) ===== */
 .topbar-inner { display: flex; align-items: center; gap: 18px; min-height: 36px; }
@@ -118,16 +118,16 @@ body[data-theme="term"] .ts-toggle { background: #242424; color: #7bc47f; }
     .topbar-tagline { display: none; }
 }
 
-/* Компактный переключатель на узких экранах: уже, кнопки-свапы */
+/* Компактный переключатель на узких экранах: панель уже, кнопки на всю ширину панели */
 @media (max-width: 700px) {
     .theme-switcher {
         left: 6px; top: 50%; transform: translateY(-50%);
-        gap: 4px; padding: 8px 5px;
+        gap: 4px; padding: 8px 5px; width: 120px; max-width: 120px;
     }
     .theme-switcher button {
-        width: 30px; height: 30px; padding: 0; font-size: 10px; border-radius: 7px;
+        width: 100%; max-width: 100%; min-width: 100%; height: auto; padding: 5px 4px; font-size: 10px; border-radius: 7px;
     }
-    .theme-switcher .ts-label { font-size: 8px; }
+    .theme-switcher .ts-label { font-size: 8px; width: 100%; }
     .theme-switcher .ts-note { display: none; }
     .theme-switcher .ts-sep { margin: 1px 0; }
 }

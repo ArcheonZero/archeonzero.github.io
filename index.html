@@ -200,9 +200,10 @@
                 <span class="badge">пространство</span>
                 <h1 class="hero-title">Точка <span class="h-accent">сборки</span></h1>
                 <p class="hero-excerpt">
-                    Здесь собирается и то, что уже есть, и то, что только складывается:
-                    портфолио, блог, визитка — в одном слое. Код, текст, наблюдения,
-                    музыка, состояния. Всё, что здесь, — с весом, ничего случайного.
+                    Здесь оседает то, что я делаю и думаю: проекты, статьи,
+                    наблюдения, музыка, состояния — и то, что из них складывается
+                    дальше. Портфолио, блог и визитка совмещены в одном месте,
+                    потому что это одно и то же.
                 </p>
                 <div class="hero-links">
                     <a href="#proekty">Проекты →</a>
@@ -535,11 +536,17 @@
     }
     var tg = document.querySelector('.ts-toggle');
     var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
     if (tg && switcher) {
         tg.addEventListener('click', function(){
             var open = switcher.classList.toggle('is-open');
             tg.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
     }
 })();
 </script>

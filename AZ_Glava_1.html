@@ -33,21 +33,21 @@
 <button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
 <div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
     <span class="ts-label">оформление</span>
-    <button data-theme-btn="term">term</button>
-    <button data-theme-btn="paper">paper</button>
-    <button data-theme-btn="cyan">cyan</button>
-    <button data-theme-btn="soft">soft</button>
-    <button data-theme-btn="amber">amber</button>
-    <button data-theme-btn="emerald">emerald</button>
-    <button data-theme-btn="amethyst">amethyst</button>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
     <span class="ts-sep"></span>
     <span class="ts-label">логотип</span>
-    <button data-logo-btn="tree">tree</button>
-    <button data-logo-btn="sphere">sphere</button>
-    <button data-logo-btn="globe">globe</button>
-    <button data-logo-btn="ray">ray</button>
-    <button data-logo-btn="branch">branch</button>
-    <button data-logo-btn="az">az</button>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ</button>
     <span class="ts-note">выбор сохраняется</span>
   </div>
 
@@ -503,17 +503,20 @@
 <script>
 (function(){ var THEMES=['term', 'paper', 'cyan', 'soft', 'amber', 'emerald', 'amethyst']; var LOGOS=['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
     var KEY='archeonzero-theme', KEY_LOGO='archeonzero-logo', body=document.body;
-    function apply(t){ if(!t||THEMES.indexOf(t)===-1)t=THEMES[0]; body.setAttribute('data-theme',t);
+    function apply(t){ if(!t||THEMES.indexOf(t)===-1)t='paper'; body.setAttribute('data-theme',t);
       document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-theme-btn')===t?'true':'false'); }); }
     function applyLogo(l){ if(!LOGOS.length)return; if(!l||LOGOS.indexOf(l)===-1)l=LOGOS[0];
       document.querySelectorAll('.logo-form').forEach(function(f){ f.style.display=(f.getAttribute('data-form')===l)?'inline':'none'; });
       document.querySelectorAll('[data-logo-btn]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-logo-btn')===l?'true':'false'); }); }
     var s=null,sl=null; try{s=localStorage.getItem(KEY)}catch(e){} try{sl=localStorage.getItem(KEY_LOGO)}catch(e){}
-    apply(s||THEMES[0]); applyLogo(sl||LOGOS[0]);
+    apply(s||'paper'); applyLogo(sl||LOGOS[0]);
     document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var t=e.currentTarget.getAttribute('data-theme-btn'); apply(t); try{localStorage.setItem(KEY,t)}catch(err){} }); });
     document.querySelectorAll('[data-logo-btn]').forEach(function(b){ b.addEventListener('click',function(e){ var l=e.currentTarget.getAttribute('data-logo-btn'); applyLogo(l); try{localStorage.setItem(KEY_LOGO,l)}catch(err){} }); });
     var _tg=document.querySelector('.ts-toggle'), _sw=document.getElementById('themeSwitcher');
-    if(_tg&&_sw){ _tg.addEventListener('click',function(){ var _o=_sw.classList.toggle('is-open'); _tg.setAttribute('aria-expanded',_o?'true':'false'); }); }
+    function _closeSw(){ if(_sw){_sw.classList.remove('is-open');} if(_tg){_tg.setAttribute('aria-expanded','false');} }
+    if(_tg&&_sw){ _tg.addEventListener('click',function(){ var _o=_sw.classList.toggle('is-open'); _tg.setAttribute('aria-expanded',_o?'true':'false'); });
+      _sw.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='BUTTON'){_closeSw();} });
+      _sw.addEventListener('mouseleave',_closeSw); }
   })();
 </script>
 
