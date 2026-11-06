@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Как я перестал бояться собственного кода и собрал свою CRM на WPF. Разработка десктопного приложения CRM: почему локальная срм, MVVM, SQLite, обо что спотыкался. DevCrm 00.">
+    <title>DevCrm 00 - Разработка десктопного приложения CRM на WPF: личный опыт — Archeon Zero</title>
+    <meta name="keywords" content="разработка crm на wpf, десктопное приложение crm, mvvm, sqlite, локальная срм, c#, devcrm">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Archeon Zero">
+    <meta property="og:title" content="DevCrm 00 - Разработка десктопного приложения CRM на WPF: личный опыт">
+    <meta property="og:description" content="Как я перестал бояться собственного кода и собрал свою CRM на WPF: MVVM, SQLite, локальная срм.">
+    <meta property="og:image" content="imgs/devcrm-00-01-crm-chaos-vs-order.png">
+    <meta property="article:published_time" content="2026-11-06T00:00:00+03:00">
+    <meta property="article:section" content="Разработка">
+    <meta property="article:tag" content="WPF, C#, MVVM, CRM, SQLite, DevCrm">
+    <link rel="canonical" href="https://archeonzero.ru/articles/devcrm-00-razrabotka-crm-na-wpf.html">
+    <link rel="stylesheet" href="../themes.css">
+    <style>
+        /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
+        .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
+        .article-topline { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; color: inherit; opacity: .75; margin-bottom: 8px; }
+        .article-h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+        .article-lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 0; }
+        .article-hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+        .article-h2 { font-family: Georgia, serif; font-size: 26px; line-height: 1.25; margin: 40px 0 14px; }
+        .article p { font-size: 17px; line-height: 1.75; color: var(--ink); }
+        .article-lyrics { font-family: Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-soft); margin: 8px 0; }
+        .article-lyrics-attrib { margin-top: 6px; color: var(--muted); font-size: 14px; font-style: normal; }
+        .article figure { margin: 32px 0; }
+        .article figure img { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+        .article figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; font-style: italic; }
+        .article pre { background: var(--deep); color: #dce6f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 14.5px; line-height: 1.5; }
+        .article-kinds { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0; }
+        .article-kinds strong { display: block; margin-bottom: 6px; }
+        .faq-q { font-weight: 700; margin-top: 22px; }
+        .article-tags { margin: 12px 0; }
+        .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        @media (max-width: 640px) {
+            .container article { padding: 32px 18px 12px; }
+            .article-h1 { font-size: 26px; }
+            .article p { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../index.html">Главная</a>
+            <a class="nav-link" href="#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../index.html#stati">Статьи</a>
+            <a class="nav-link" href="#ploshadki">Площадки</a>
+            <a class="nav-link" href="#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+<main class="site-main" id="main">
+    <div class="container">
+        <article class="article">
+    <div class="article-topline">DevCrm · Цикл статей о CRM на WPF · № 00</div>
+    <h1 class="article-h1">DevCrm 00 - Меня парализовало перед собственным проектом CRM на WPF: ни назад, ни вперёд</h1>
+    <p class="article-lead">Почему я выбрал локальную CRM на WPF вместо веба, и как MVVM с SQLite помогли мне перестать бояться собственного кода.</p>
+
+    <hr class="article-hr">
+
+    <figure>
+        <img src="imgs/devcrm-00-01-crm-chaos-vs-order.png" alt="Контраст хаоса и порядка: слева запутанный код моей будущей CRM, справа аккуратная структура">
+        <figcaption>Слева брошенный код, который грыз меня три года. Справа то, что потом получилось — моя CRM.</figcaption>
+    </figure>
+
+    <p>Я открыл папку с проектом будущей CRM, и меня накрыло воспоминаниями и тревогой. Что-то подкатило к горлу. Как в детстве, когда перебегаешь дорогу и тут красный: машины полетели в разные стороны, а ты не можешь шагнуть ни назад, ни вперёд.</p>
+
+    <p>Если вы годами откладываете проект, потому что «потом, не сейчас», — заходите. Это подземелье про вас. Стены здесь из собственного кода, и я знаю, как из них выйти.</p>
+
+    <p>Я ещё не понял, почему тело кричит. Просто внутри всё сжалось от того, что лежит в этой папке. Проект на C# под .NET, начатый с размахом и брошенный на полпути. В голове уже зашептало: закрой. Сделай вид, что не было. Не сейчас. Потом, потом, только не сейчас.</p>
+
+    <p>И меня это взбесило. В который раз я отступаю от того, что сам же и бросил. Собственный код пугает сильнее, чем чужой. Это уже не страх, а стыд пополам со злостью.</p>
+
+    <p>Но в этот самый момент до меня дошло: вся эта сцена до боли знакома. Она будто срисована с трека «Война» Дельфина. И в голове вертелись две строчки, которые сложились в главную мысль.</p>
+
+    <p class="article-lyrics">И каждый день превращается в бешеный бой</p>
+    <p class="article-lyrics">И это тоже война, но война с самим собой</p>
+    <p class="article-lyrics-attrib">Дельфин, «Война», © 1997</p>
+
+    <p>Я застыл перед экраном. Переменные temp1, asd. Код, сросшийся с интерфейсом. Циклы, у которых нет конца. Это был мой учебный проект, моя гордость когда-то. И самое страшное: я «договорился» с собой не возвращаться сюда. Просто закрыл и сделал вид, что ничего не было. А ведь эту срм я когда-то мечтал довести до ума.</p>
+
+    <p>А потом случилось странное. Вместо того чтобы в очередной раз захлопнуть ноутбук, я задержал дыхание и открыл пустой файл, чтобы начать заново. Просто человеку надоело стоять на этой дороге.</p>
+
+    <p>И я перестал быть разработчиком, который не знает, куда девать руки. Я представил себя воином, выходящим на сражение. С трясущимися поджилками, не до конца понимая, что происходит, но уже ища, куда поставить шаг.</p>
+
+    <p>Едва я потянулся к клавиатуре, понял: строка из песни была точной. Настоящий противник — не тот код, а тот я, что боится сделать первый шаг. Чёрт, а вдруг не выйдет? А может, я зря всё это затеял?</p>
+
+    <p>С этим внутренним противником я и пошёл в бой.</p>
+
+    <h2 class="article-h2">Почему я выбирал локальную CRM, а не веб</h2>
+
+    <p>Три года назад я верил, что серьёзная программа обязана жить в браузере. Все так говорили. Серверы, базы, деплои. Я поднимал всё это, настраивал, тратил вечера. И каждый раз ловил одно и то же ощущение.</p>
+
+    <p>Вечер пятницы. Я хочу спокойно посидеть на выходных. А у меня не работает деплой. Или упал сервер. Или CORS ни с того ни с сего решил не пускать. Я не программу писал, а разводил костёр, который надо было поддерживать, чтобы огонь не погас.</p>
+
+    <p>Тут я и понял: мне не нужен сайт. Мне нужно приложение, которое делает своё дело без интернета. Открыл и работает. Без пароля к серверу, без хостинга и домена. Так у меня и созрела идея локальной CRM: свои данные, свои обновления.</p>
+
+    <p>Для личной или внутренней срм это в разы удобнее, чем таскать данные через облако. В моей CRM данные живут рядом со мной, а их защита — на моей стороне, а не в чьём-то сервере.</p>
+
+    <p>Сначала я попробовал WinForms. Быстро, просто, по-своему уютно, без долгих настроек. Но хватило одной лишней формы, чтобы понять: спор WPF против WinForms не пустой. Там быстро собираются окошки, а вот архитектуру десктопного приложения, в которую потом ляжет MVVM, приходится выстраивать на костылях. Для проекта, который я хотел вырастить по-человечески, это был тупик.</p>
+
+    <p>И я выбрал разработку десктопного приложения CRM на WPF — надёжном фреймворке от Microsoft для Windows-приложений на .NET. Мне не нужны были микросервисы и слои абстракции, которые существуют, чтобы было о чём поговорить. Мне нужна была кнопка, которая отвечает на F5. Итоговый стек простой: .NET 8, WPF, библиотека Microsoft.Data.Sqlite для доступа к данным, сам файл SQLite лежит рядом с exe.</p>
+
+    <h2 class="article-h2">MVVM в моей CRM, или как я перестал тонуть</h2>
+
+    <p>Сначала я писал как все. Код прямо в code-behind, в MainWindow.xaml.cs. Работало, пока кода было строчек сто. Я нажимал F5, окно открывалось, всё кликалось. И я решил, что дело сделано.</p>
+
+    <p>А потом добавил вторую форму. И третью. И тут всё сломалось.</p>
+
+    <p>Я сидел, смотрел на файл в полторы тысячи строк и не мог ответить на простейший вопрос, который в CRM должен быть элементарным: где тут кнопка «Сохранить»? Логика перемешалась с интерфейсом настолько, что разобраться не мог даже я, хотя писал это вчера. Это было распутье: я не понимал, куда идти.</p>
+
+    <p>Зацепка пришла неожиданно. Я вспомнил про MVVM. Не как про модный паттерн, а как про способ навести порядок. Любой, кто держит рабочее место чистым, понимает: у каждой вещи есть место. Провода по коробочкам, инструменты по полкам.</p>
+
+    <p>MVVM — то же самое, только для кода. Сам паттерн про Model, View и ViewModel. Репозитории и сервисы — слои, которыми я разгрузил вьюмодели от лишних функций. Разложил всё по полочкам, и проект перестал быть кашей, в которой я тонул. Я находил «Сохранить» за две секунды. Страх перед собственным кодом ушёл, потому что у кода появился скелет.</p>
+
+    <p>Структура проекта получилась модульной: папки Models, ViewModels, Views, Services и Data. Каждая отвечает за своё и не лезет в чужие.</p>
+
+    <p>Ключевая деталь, которая делает это живым, а не картинкой: вьюмодели реализуют INotifyPropertyChanged. Этот интерфейс через служебный API говорит средству привязки, что данные изменились. Без него binding в WPF не узнаёт об обновлениях, и экран остаётся статичным. И вот эта, на первый взгляд скучная штука, отделяет живое приложение от картинки.</p>
+
+    <figure>
+        <img src="imgs/devcrm-00-02-crm-mvvm-architecture-diagram.png" alt="Схема MVVM-архитектуры CRM: 5 изометрических блоков со стрелками">
+        <figcaption>Архитектура моей CRM на WPF: Models, Repositories, Services, ViewModels, Views.</figcaption>
+    </figure>
+
+    <h2 class="article-h2">Первая модель в CRM, или с чего начать</h2>
+
+    <p>Когда скелет был готов, я замер по другой причине. Страх подкатил: я стоял перед пустой папкой Models и не понимал, с чего начать. Что писать первым? Если ошибусь, опять утону в хаосе, и все усилия насмарку.</p>
+
+    <p>Хорошо, что ответ пришёл из самой сути дела. В срм системе всё крутится вокруг одного. Это контакт. Не юзеры, не задачи, не отчёты. А именно он. Тот, кто что-то купил, кому-то позвонил, что-то обещал. Если правильно описать модель Client, остальное приложится само.</p>
+
+    <p>Я не стал выдумывать десятки полей и фич на будущее. Взял ровно то, что нужно менеджеру в работе: имя, телефон, почта, компания, статус, кто из команды ведёт. Потому что лишнее потом добавить проще, чем убирать, когда проект уже держится на схеме базы.</p>
+
+    <p>Я открыл пустой файл и начал писать. Не думая об архитектуре, просто фиксируя то, что знаю про контакт прямо сейчас.</p>
+
+    <pre>public class Client
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Phone { get; set; }
+    public string Email { get; set; }
+    public string Company { get; set; }
+    public string Status { get; set; }
+}</pre>
+
+    <p>И я впервые за долгое время выдохнул. Фундамент можно положить без абстракций, которые ломаются в самый неподходящий момент.</p>
+
+    <p>Потом добавились и остальные сущности. Каждая появлялась по необходимости. Нужно привязать контакт к менеджеру — появился AssignedUserId. Нужны заметки — появилась модель Note. Так код рос из жизни, а не из схемы. И это, пожалуй, самый правильный способ не утонуть.</p>
+
+    <h2 class="article-h2">SQLite для моей CRM, или как я чуть не похоронил всё</h2>
+
+    <p>Был момент, когда я едва не уничтожил проект на старте. Я начитался про PostgreSQL, развернул её на машине, настроил. Гордый, сел открывать программу и упёрся в стену.</p>
+
+    <p>Сервер надо было поднимать до того, как запустится приложение. А то и вовсе заводить его отдельно. И меня захватил привычный ступор. Я хочу открыть свою срм и работать, а вместо этого мне предлагают развести костёр, который надо кормить. Тот же деплой, только на своём диске.</p>
+
+    <p>Захлопнул ноут и замер. Дальше только два пути: либо я учусь обслуживать сервер всю жизнь, либо нахожу способ, где база живёт рядом с кодом и просыпается сама.</p>
+
+    <p>Тут и всплыл SQLite. Встроенная база в одном файле рядом с приложением. Связка SQLite и C# заработала сразу, без конфига. Ничего ставить, ничего админить. Файл, который всегда с тобой. Я завёл его, и тяжесть ушла.</p>
+
+    <p>Для офлайн-работы такого десктопного приложения на одном компьютере этого хватает с головой. А если когда-нибудь понадобится сервер, переберусь на Entity Framework Core: он сменит провайдер, переиспользует ту же модель, а данные переедут отдельным шагом с бэкапом.</p>
+
+    <h2 class="article-h2">Интерфейс моей CRM, или момент, ради которого всё затевалось</h2>
+
+    <p>База заработала. Я дошёл до самого приятного, до интерфейса. Взял стандартный DataGrid, настроил привязку данных, добавил три кнопки: «Добавить», «Сохранить», «Удалить». Всё через команды: кнопка ничего не знает о логике, она вызывает команду вьюмодели.</p>
+
+    <p>Секрет, без которого ничего не зашевелится: коллекция во вьюмодели — это ObservableCollection<Client>. Только она умеет говорить таблице, что добавились новые строки. С тех пор «привязка данных» и «команды» для меня перестали быть просто словами из туториала.</p>
+
+    <p>И тут дрожь. Момент, которого я боялся три года.</p>
+
+    <p>Я запускаю приложение. Нажимаю «Добавить». Вписываю данные клиента. Нажимаю «Сохранить». В таблице появляется строка.</p>
+
+    <p>Не на сайте. Не в облаке. В моей программе, в моём окне, на моём компьютере.</p>
+
+    <p>Я не слышал щелчка. Но внутри что-то выдохнуло. Ком, который стоял в горле три года, исчез. СРМ-система, которую я боялся начать, ожила за один вечер. И я понял, что сражение с самим собой, начатое на той дороге, я, кажется, выиграл.</p>
+
+    <figure>
+        <img src="imgs/devcrm-00-03-crm-datagrid-interface-mockup.png" alt="Мокап интерфейса CRM на WPF с тёмной темой и таблицей DataGrid">
+        <figcaption>Момент, ради которого всё затевалось: моя CRM показывает первого контакта.</figcaption>
+    </figure>
+
+    <p>И я понял, почему так долго не возвращался. Я боялся не кода. Я боялся, что не смогу. А оказалось — смог. И этот вечер я теперь вспоминаю каждый раз, когда что-то идёт не так. Он напоминает: противник, которого я победил, был не снаружи.</p>
+
+    <h2 class="article-h2">Обо что я спотыкался по пути в CRM</h2>
+
+    <figure>
+        <img src="imgs/devcrm-00-04-crm-tangled-bindings.png" alt="Запутанный клубок светящихся нитей-биндингов в CRM">
+        <figcaption>Молчаливые биндинги, то, обо что спотыкается каждый WPF-разработчик в CRM.</figcaption>
+    </figure>
+
+    <p>Не буду приукрашивать: гладко не было от слова совсем. Были баги и вещи, которые выжимали сил не меньше, чем тот вечер с дорогой. Вот три из них.</p>
+
+    <p>Первое. MVVM на старте кажется лишней бюрократией. Когда у тебя три окна, хочется плюнуть и закидать всё в code-behind. Я сдержался, и когда проект вырос, каждый день благодарил себя за порядок.</p>
+
+    <p>Второе. DataGrid тупит на больших данных. На паре тысяч контактов прокрутка начала дёргаться: строки виртуализируются и так, но контейнеры пересоздаются при каждом проходе, и я почувствовал, как поднимается привычная тревога. Лечится строкой в XAML: VirtualizingPanel.VirtualizationMode="Recycling". Контейнеры переиспользуются, и таблица успокаивается.</p>
+
+    <p>Третье. Связка WPF, MVVM и SQLite не про многопользовательскую CRM. Для одного человека это идеально, а для сети рабочих мест придётся мигрировать на PostgreSQL и разводить админа. Я отложил это в голову заранее, чтобы не споткнуться, когда дойдёт до дела.</p>
+
+    <h2 class="article-h2">Итог: как я собрал свою CRM</h2>
+
+    <p>За несколько вечеров я собрал рабочий прототип своей CRM. Не релиз в продакшн, а фундамент, с которого проект CRM и начинается. Но главное не в этом.</p>
+
+    <p>Теперь, когда я открываю код, меня не грызёт. Я больше не стою на месте, гадая, куда шагнуть. Я иду по намеченной дороге, и у меня есть план. Это признак того, что CRM стала моей. Это, пожалуй, единственный показатель, который имеет значение.</p>
+
+    <p>Остался нюанс, который не выкинуть: у каждого боя есть цена. И окончательной победы над самим собой, наверное, не бывает. Воин просто становится лучше воевать. А стены этого подземелья из собственного кода я уже выучил наизусть.</p>
+
+    <figure>
+        <img src="imgs/devcrm-00-05-crm-code-foundation-bricks.png" alt="Фундамент из цифровых кирпичей-строк кода">
+        <figcaption>Фундамент моей CRM: каждая строка C# и XAML это кирпич, на котором строится будущее.</figcaption>
+    </figure>
+
+    <div class="article-kinds">
+        <strong>Кому подойдёт такой подход:</strong>
+        хотите разобраться в WPF на живом примере, а не на учебных квадратиках; нужна личная срм система без облака и подписок; устали от веба и хотите своё окно на рабочем столе.
+    </div>
+
+    <div class="article-kinds">
+        <strong>Кому не подойдёт:</strong>
+        нужна многопользовательская CRM с доступом из браузера; хочется готовое решение из коробки, без погружения в устройство CRM.
+    </div>
+
+    <h2 class="article-h2">Частые вопросы</h2>
+
+    <p class="faq-q">Сколько времени заняла разработка прототипа?</p>
+    <p>Около двух недель вечеров по два-три часа. Без спешки, с переписыванием. На этапе прототипа это нормально: главное довести CRM до рабочего состояния, а не сделать идеально с первого раза.</p>
+
+    <p class="faq-q">Нужен ли опыт в C# для повторения?</p>
+    <p>Базовый, да. Понимание классов, свойств, интерфейсов. Если вы когда-нибудь писали на C# хотя бы учебные задачки, этого хватит. По ходу есть возможность освоить MVVM, главное не пытаться объять всё сразу.</p>
+
+    <p class="faq-q">Можно ли использовать этот код в коммерческом проекте?</p>
+    <p>Подход и код разберём по шагам в следующих статьях, ограничений на использование нет. Как прототип он рабочий, но для продакшена вашей CRM нужно будет допилить валидацию, пройти тестирование и продумать перенос данных на более серьёзную базу.</p>
+
+    <p class="faq-q">А можно сделать свою срм с нуля без опыта?</p>
+    <p>Можно, если готовы учиться по ходу. Без багажа будет сложно, но оно того стоит. Начните с простой модели Client и одной кнопки «Добавить». Остальное придёт постепенно. Неважно, как звать такую систему — срм, црм или CRM, суть одна: это ваш инструмент. WPF и MVVM здесь не прихоть, а способ не погибнуть в собственном коде.</p>
+
+    <hr class="article-hr">
+
+    <p>Радость длилась недолго. Стоило мне завести второго клиента, как я заметил странность. Кнопка «Сохранить» молчала, если я забывал заполнить телефон. Никаких ошибок, никакого крика, просто тишина. В моей аккуратной архитектуре осталась дыра, через которую проваливаются данные. Как я заставил программу говорить со мной — в следующей статье цикла.</p>
+
+    <div class="article-tags">
+        <span>#WPF</span><span>#CSharp</span><span>#MVVM</span><span>#CRM</span><span>#SQLite</span><span>#Разработка</span><span>#DevCrm</span>
+    </div>
+
+    <a class="back-link" href="../index.html">← Назад к визитке</a>
+        </article>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2 class="article-h2">Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="#proekty">Проекты</a>
+            <a href="#stati">Статьи</a>
+            <a href="#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['term', 'paper', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
