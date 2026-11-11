@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Одна строка кода в методе OpenEditForm убивала кнопку «Новый клиент» в CRM на WPF: контакты не редактировались, привязка молчала. Разбор бага прав доступа и привязки данных в MVVM. DevCrm 01.">
+    <title>DevCrm 01 - Одна строка убивала кнопку «Новый клиент» в моей CRM на WPF — Archeon Zero</title>
+    <meta name="keywords" content="crm на wpf, кнопка не работает mvvm, управление контактами crm, привязка данных wpf, не редактируются записи crm, c#, devcrm">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Archeon Zero">
+    <meta property="og:title" content="DevCrm 01 - Одна строка убивала кнопку «Новый клиент» в моей CRM на WPF">
+    <meta property="og:description" content="Одна строка кода ломала управление контактами в CRM на WPF: кнопка «Новый клиент» молчала. Как выглядит такой баг у привязки данных в MVVM.">
+    <meta property="og:image" content="imgs/devcrm-01-01-crm-contacts-button-refuses.png">
+    <meta property="article:published_time" content="2026-11-07T00:00:00+03:00">
+    <meta property="article:section" content="Разработка">
+    <meta property="article:tag" content="WPF, C#, MVVM, CRM, SQLite, DevCrm">
+    <link rel="canonical" href="https://archeonzero.ru/articles/devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html">
+    <link rel="stylesheet" href="../themes.css">
+    <style>
+        /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
+        .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
+        .article-topline { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; color: inherit; opacity: .75; margin-bottom: 8px; }
+        .article-h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+        .article-lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 0; }
+        .article-hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+        .article-h2 { font-family: Georgia, serif; font-size: 26px; line-height: 1.25; margin: 40px 0 14px; }
+        .article p { font-size: 17px; line-height: 1.75; color: var(--ink); }
+        .article-lyrics { font-family: Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-soft); margin: 8px 0; }
+        .article-lyrics-attrib { margin-top: 6px; color: var(--muted); font-size: 14px; font-style: normal; }
+        .article figure { margin: 32px 0; }
+        .article figure img { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+        .article figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; font-style: italic; }
+        .article pre { background: var(--deep); color: #dce6f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 14.5px; line-height: 1.5; }
+        .article-kinds { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0; }
+        .article-kinds strong { display: block; margin-bottom: 6px; }
+        .faq-q { font-weight: 700; margin-top: 22px; }
+        .article-tags { margin: 12px 0; }
+        .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        /* Две зоны-сайдбара (фикс. при скролле, как глава книги):
+           слева — статьи цикла DevCrm; справа — оглавление статьи. Контент — по центру. */
+        .layout { display: flex; gap: 28px; align-items: flex-start; max-width: 1260px; margin: 0 auto; padding: 0 24px; }
+        .layout article { flex: 1 1 auto; max-width: 760px; margin: 0; min-width: 0; order: 2; }
+        .sb { width: 270px; flex: 0 0 270px; position: sticky; top: 24px; align-self: flex-start;
+              max-height: calc(100vh - 48px); overflow-y: auto; padding: 20px 18px;
+              background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+              font-size: 13.5px; line-height: 1.45; }
+        .sb-left { order: 1; }
+        .sb-right { order: 3; }
+        .sb h3 { font-family: Georgia, serif; font-size: 12px; margin: 14px 0 8px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--muted); }
+        .sb h3:first-child { margin-top: 0; }
+        .sb a { display: block; padding: 3px 0; text-decoration: none; color: var(--ink-soft); }
+        .sb a:hover { color: var(--accent); }
+        .sb a.sb-active { color: var(--accent); font-weight: 700; }
+        .sb .toc { counter-reset: toc; }
+        .sb .toc a::before { counter-increment: toc; content: counter(toc) ". "; color: var(--muted); }
+        @media (max-width: 1100px) {
+            .sb-right { display: none; }
+            .layout { flex-wrap: wrap; }
+        }
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; padding: 0 16px; }
+            .layout article { max-width: 100%; }
+            .sb { width: 100%; flex: 1 1 auto; position: static; max-height: none; order: -1; }
+        }
+    </style>
+</head>
+<body>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../index.html">Главная</a>
+            <a class="nav-link" href="../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../index.html#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+<main class="site-main" id="main">
+    <div class="container layout">
+        <aside class="sb sb-left" aria-label="Разделы сайта и цикл DevCrm">
+            <h3>Разделы сайта</h3>
+            <a href="../index.html">Главная</a>
+            <a href="../index.html#proekty">Проекты</a>
+            <a href="../index.html#stati">Статьи</a>
+            <a href="../index.html#ploshadki">Площадки</a>
+            <a href="../index.html#kontakty">Контакты</a>
+            <h3>Цикл DevCrm</h3>
+            <a href="devcrm-00-razrabotka-crm-na-wpf.html"><strong>00</strong> Как делали CRM на WPF: от идеи до прототипа</a>
+            <a class="sb-active" href="devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html"><strong>01</strong> Почему не редактируются контакты?</a>
+            <a href="https://teletype.in/@archeonzero/5w-wfACBNzI" target="_blank"><strong>02</strong> Архитектура, слои и первые модели</a>
+            <a href="https://teletype.in/@archeonzero/mnDoAuTCnA_" target="_blank"><strong>03</strong> Корзина и мягкое удаление</a>
+            <a href="https://teletype.in/@archeonzero/9GYsgd7nSAm" target="_blank"><strong>04</strong> Пользователи и роли</a>
+            <a href="https://teletype.in/@archeonzero/TszNycO_oXQ" target="_blank"><strong>05</strong> «Кандовенько выглядит»</a>
+            <a href="https://teletype.in/@archeonzero/7OhnHwkPCkF" target="_blank"><strong>06</strong> «Верхняя панель ушла к себе!»</a>
+            <a href="https://teletype.in/@archeonzero/HAHIemNcfxP" target="_blank"><strong>07</strong> Чат в CRM</a>
+            <a href="https://teletype.in/@archeonzero/J7P7gLMcQQA" target="_blank"><strong>08</strong> Когда MainViewModel разросся до 1300+ строк</a>
+            <a href="https://teletype.in/@archeonzero/2279Vq-rrWZ" target="_blank"><strong>09</strong> Стили WPF: ResourceDictionary</a>
+            <a href="https://teletype.in/@archeonzero/2fcmL1RhnBR" target="_blank"><strong>10</strong> Как поставить точку в своей CRM</a>
+        </aside>
+        <article class="article">
+
+    <div class="article-topline">DevCrm · Цикл статей о CRM на WPF · № 01</div>
+    <h1 class="article-h1">DevCrm 01 - Одна строка убивала кнопку «Новый клиент» в моей CRM на WPF</h1>
+
+    <figure>
+        <img src="imgs/devcrm-01-01-crm-contacts-button-refuses.png" alt="Кнопка управления контактами в CRM на WPF не реагирует на клик — интерфейс молчит">
+        <figcaption>Когда кнопка управления контактами в CRM смотрит на тебя как на дурака.</figcaption>
+    </figure>
+
+    <p class="article-lead">Одна строка кода в методе OpenEditForm убивала всё управление контактами в CRM на WPF: кнопка «Новый клиент» молчала, хотя привязка данных и команды работали. Разбор бага прав доступа и привязки в MVVM.</p>
+
+    <hr class="article-hr">
+
+    <p>А начались эти баги в коде на ровном месте!</p>
+
+    <p>Сижу довольный, пью кофеёк. Это моя первая срм-ка: только что дописал интерфейс авторизации пользователя, прикрутил базу данных SQLite, настроил MVVM под .NET, собрал билд костяк models, протянул вьюхи и вью-модельки. Думаю: «Пора тестить модуль». Запускаю свою CRM на WPF через Visual Studio, захожу с login и password в админке, нажимаю вкладку клиентов, жму «Add client». Всё работало. Кроме одной кнопки. Той, ради которой всё затевалось.</p>
+
+    <p>Жду. Думаю, тупит интерфейс системы или Visual Studio прогружается или обновляется, фиг знает. Секунда, десять. Жму ещё раз. Начинаю нажимать интенсивнее. Ноооо... ничего! Пациент не отзывается.</p>
+
+    <p>Я хотел настроить clients services в CRM: завести нового контакта, вбить имя и телефон и увидеть, что он появился в интерфейсе wpf программы. Вместо этого сижу и смотрю на экран, как баран на новые ворота. А на том конце срм по-прежнему висит и молчит непонятно почему, хоть дебагер включай. Ведь только что всё работало: и авторизация, и база клиентов, и права доступа к форме. А bottom, которая должна создать client, словно отрезана от всего мира. Почему настройка контактов вдруг перестала откликаться?</p>
+
+    <p>Логика говорит одно, интерфейс делает другое. Между ними пропасть, и я не вдупляю, где мост. Я привык, что привязка свойств данных в WPF функционирует сама собой, а тут она будто бы не замечала, что я пытаюсь открыть меню. Весь стек приложения, вся цепочка от DataGrid до ViewModel, работала — но только не этот кусок управления контактами. И в этом была главная подстава: когда CRM на WPF в целом отвечает, а один модуль молчит, начинаешь подозревать всё что угодно, только не ту единственную строку кода, что реально виновата.</p>
+
+    <h2 class="article-h2" id="sec-stupor">Ступор</h2>
+
+    <p>С одной стороны всё просто, а с другой совсем не просто. Когда по всей логике думаешь, что в твоей ЦРМ всё должно работать и нажиматься, а оно не нажимается нифига. Я вошёл, авторизовался, <code>IsAuthenticated</code> поменялся с <code>false</code> на <code>true</code>. Интерфейс проги должен давать отклик. Но программный модуль не отзывался.</p>
+
+    <p>Убрал аутентификацию, все модули активны до нажатия. Тоже не то. Ну конечно, теперь во фронтенде проги открыто всегда, как изба без дверей. Выходит, дело не в видимости строки кода, а в состоянии полей и команд: они будто бы на месте, а поле блока всё равно не ведёт. И в меню администрирования, и в базе клиентов внутри CRM всё выглядит цело, а интерфейс не хочет жить.</p>
+
+    <p>Включаю визор ультравидения. Шучу, просто раскинул мозгами и построил цепочку событий при загрузке CRM:</p>
+
+    <ul>
+        <li>Вход в админку.</li>
+        <li>Клиентская база загрузилась.</li>
+        <li>В форме редактирования неактивна.</li>
+        <li>«New client» активна (с правами доступа «админ»).</li>
+        <li>При нажатии «Новый клиент» ввод данных становится активным, другие функции активны, значит управление доступом работает.</li>
+        <li>При выборе контакта в таблице (в DataGrid) форма активна с контактными данными, значит управление контактами срабатывает.</li>
+        <li>После сохранения или сброса блок блокируется.</li>
+    </ul>
+
+    <p>В методе <code>ShowLogin()</code> по умолчанию ставлю <code>IsEditMode = false;</code>. Логично: после входа нельзя редактировать контакт, пока на кнопочку не тыркнешь. Отлично.</p>
+
+    <p>Вот теперь неактивно, но другая беда: после нажатия «New Client» поля живыми не становятся. Да чтож такое.</p>
+
+    <h2 class="article-h2" id="sec-sledy">Три ложных следа</h2>
+
+    <p>Включаю mode следователя. Detective mode ON. Погнали. Буду разбираться, что происходит в этой CRM на уровне функций библиотеки WPF и привязок данных. Архитектура MVVM хороша тем, что слои разделены: модель данных, вью-модель с логикой и вью с разметкой. Но именно это разделение и сыграло со мной злую шутку — баг спрятался не в логике, а в связке между слоями, в том, как компоненты управления контактами получают сигнал о том, что запись готова к редактированию.</p>
+
+    <figure>
+        <img src="imgs/devcrm-01-02-crm-contacts-access-detective.png" alt="Разбор кода привязки данных MVVM в CRM на WPF, поиск виновника сломанного управления контактами">
+        <figcaption>Раскинул мозгами и построил цепочку событий управления контактами в CRM.</figcaption>
+    </figure>
+
+    <p>Первый подозреваемый. Нашёл в разметке XAML вот это:</p>
+
+    <pre>&lt;Button Content="Новый клиент"
+Command="{Binding AddCommand}"
+Margin="5"
+Padding="12,6"
+Style="{StaticResource AccentButton}"
+Click="Button_Click"/&gt;</pre>
+
+    <p>Стоп. А это что тут делает? Команда <code>AddCommand</code> привязана, но рядом ещё и <code>Click="Button_Click"</code>. В MVVM WPF это классическая ошибка с привязкой данных (wpf binding): смешивать два архитектурных решения. Такое в bottom-ах CRM встречается чаще, чем хочется. Либо команда программы, либо обработчик события, оба сразу — это как ехать на велосипеде и пытаться крутить руль от машины.</p>
+
+    <p>Убираю <code>Click="Button_Click"</code>. Запускаю очередной раз тестовое включение. Не работает. Ничего не понимаю, от слова совсем. Начинаю подозревать, что WPF сознательно игнорирует, и про себя ругаюсь с ней. Внутри что-то сжимается: а вдруг я вообще не алё, как это работает?</p>
+
+    <p>Второй подозреваемый. Может, строка кода не вызывается вовсе? Вот при выборе контакта блоки интерфейса становятся активными, а при нажатии «Новый клиент» нет. Чешу котелок, котелок не отвечает, обычно, да! Гоняю в голове сценарий, как ведёт себя срм при каждом клике.</p>
+
+    <p>Вставляю <code>MessageBox.Show("AddClient воркает!")</code>. Запускаю CRM, нажимаю, всплывает окно «AddClient в строю!», а иконки фронтенда неактивны. Всё, приплыли. Модуль работает. Метод отрабатывает. А строки заполнения параметрами и свойствами остаются мёртвыми. Это уже не баг системы, а по-любому чьи-то козни, никак иначе. Восстание машин, по-любому! Арррр. И внутри поднимается знакомая тревога: а если я не смогу это восстановить?</p>
+
+    <p>Двух фигурантов убрал из досье. Обработчик ни при чём, command откликается на запрос. Остался последний, самый странный.</p>
+
+    <p>Третий кандидат. Свойство меняется, но UI не видит? Следом после <code>IsEditMode = true</code> добавляю <code>MessageBox.Show($"IsEditMode = {IsEditMode}")</code>. Стартуем, получаю <code>IsEditMode = true</code>. То есть переключается и команда вызывается, а поля всё равно не оживают.</p>
+
+    <p>Тут уже кажется, что это не WPF, а полтергейст какой-то. Привязка данных работает, свойства меняются, а интерфейс живёт своей жизнью. Как будто WPF самостоятельная личность и творит свой личный беспредел.</p>
+
+    <figure>
+        <img src="imgs/devcrm-01-03-crm-contacts-ghost-in-machine.png" alt="Призрак в машине: в интерфейсе CRM на WPF управление контактами молчит без видимой причины">
+        <figcaption>Когда WPF сам решает судьбу управления контактами в CRM.</figcaption>
+    </figure>
+
+    <p>Три версии. Три тупика. Я сижу перед дисплеем с прогой, и ком в горле становится плотнее. Столько раз перезапустил дебагер, что сбился со счёта запусков. Я не продвинулся ни на шаг. А если это не дебагнуть вовсе?</p>
+
+    <h2 class="article-h2" id="sec-string">Одна строка</h2>
+
+    <p>А потом я открыл метод <code>OpenEditForm</code> CRMки в Visual Studio. Именно он подтягивает форму для нового контакта и отвечает за первичную настройку управления контактами внутри этой CRM на WPF. Этот метод — сердце модуля работы с записями: он решает, в каком состоянии окажется форма, какие свойства привязки заполнятся при создании нового клиента. Просто чтобы ещё раз посмотреть, может, я что-то упустил.</p>
+
+    <pre>private void OpenEditForm(Client? client = null)
+{
+if (!IsAuthenticated) return;
+if (client == null)
+{
+IsAuthenticated = false;   // ВОТ ОНО
+EditableClient = new Client
+{
+CreatedAt = DateTime.Now,
+Status = "Lead",
+AssignedUserId = _userService.GetCurrentUser()?.Id
+};
+SelectedClient = null;
+}
+// ... и так далее
+}</pre>
+
+    <p>Стоп. Что?!</p>
+
+    <figure>
+        <img src="imgs/devcrm-01-04-crm-contacts-eureka-access.png" alt="Озарение при отладке CRM на WPF: одна строка кода ломала привязку и управление контактами">
+        <figcaption>Одна строка ломала всё управление контактами в CRM.</figcaption>
+    </figure>
+
+    <p>Строка <code>IsAuthenticated = false;</code> стояла в самом начале ветки «новый клиент». То есть я нажимаю её, метод создаёт новый контакт в моей срм и тут же отменяет авторизацию. А раз <code>IsAuthenticated = false</code>, все кнопки и строки, привязанные к этому состоянию, гаснут. Форма добавления клиента просто отключилась раньше, чем успела показаться. Меню «открылось», но сразу умерло, вместе с ней умер кусок рабочей CRM. Управление контактами, которое я так старательно настраивал, оказалось заблокировано на самом входе, ещё до того, как пользователь успел что-то сделать.</p>
+
+    <p>Зачем я тогда это сделал, фиг знает. В упор не могу вспомнить, для каких целей была эта строка. Возможно, это был остаток какого-то старого эксперимента с состоянием экрана и режимами формы. Возможно, я копировал код из другого метода и не заметил. Но факт остаётся фактом: единственная строка в неправильном месте убивала всю функциональность.</p>
+
+    <p>Убрал строку. Заработало.</p>
+
+    <p>И внутри что-то выдохнуло. Тот самый ком в горле, который стоял с самого начала, рассосался. Пальцы перестали быть холодными. Я откинулся на спинку стула и впервые за несколько часов нормально вдохнул. Как будто свисток сняли с закипающего чайника.</p>
+
+    <figure>
+        <img src="imgs/devcrm-01-05-crm-contacts-relief.png" alt="Разрядка после починки CRM на WPF: управление контактами снова работает, интерфейс ожил">
+        <figcaption>Свисток сняли с чайника: управление контактами в CRM ожило.</figcaption>
+    </figure>
+
+    <h2 class="article-h2" id="sec-vyvod">Вывод: не всегда проблема там, где кажется</h2>
+
+    <p>Вывод простой: не всегда проблема привязки в CRM на WPF лежит в самой привязке. Чаще всего она прячется в моей голове, когда я занимаюсь девелопингом в три часа ночи.</p>
+
+    <p>Когда у тебя обширная ViewModel в WPF, где всё намешано в одну кучу (авторизация, контакты, задачи, видимость элементов), найти такую ошибку можно только внимательно просматривая код. По моему опыту, именно такие баги съедают больше всего ночи: кода много, а смотреть надо в одну конкретную строку. Никакие breakpoint'ы не помогут, если ты не знаешь, куда смотреть.</p>
+
+    <p>Этот случай стал для меня не первым уроком рефакторинга кода, и я уверен, не последним, но запомнился оййй как надолго. Я понял, что нужно:</p>
+
+    <ul>
+        <li>Разделять ответственность бекенда программы. Авторизация в одном месте, работа с данными в другом.</li>
+        <li>Не смешивать обработчики. В MVVM либо команда, либо Click, никогда оба.</li>
+        <li>Проверять побочные эффекты через debugger. Если метод делает одно, а потом неожиданно меняет свойства, от которых зависит половина интерфейса, это красный флаг. А ещё смотреть, какие состояния и видимость элементов висят на этих свойствах.</li>
+    </ul>
+
+    <p>С тех пор я иначе смотрю на состояние форм и на то, как устроено управление users-ами в срм. Меня удивило, как тихо может сломать всё одна строка: она рушит UI и для юзера, и для админа, если стоит не там. Особенно когда речь про управление контактами в командной CRM, где каждый менеджер работает со своими записями, а админ — со всеми сразу.</p>
+
+    <p>Это базовый пример того, как отладка WPF приложения экономит часы. Без неё я бы ещё неделю копался в привязке данных (data binding) и настройке управления контактами, а проблема была в одной строке кода.</p>
+
+    <p>Ох уж эти злосчастные состояния и привязки, с которыми никак и без которых никак, прям как с девушками, и постоянно нужно ковырять и внимательно прописывать и протягивать поля в СиЭрЭм так, чтобы всё работало и не блокировало быстрые операции с записями и клиентами.</p>
+
+    <div class="article-kinds">
+        <strong>Кому подойдёт такой разбор:</strong>
+        только начинаете работать с MVVM в WPF, пишете свою CRM и столкнулись с тем, что привязки не работают; пишете wpf приложение и у вас не корректируются записи; ищете типичные ошибки при создании команд в XAML; столкнулись с тем, что кнопка в WPF не реагирует на нажатие.
+    </div>
+
+    <div class="article-kinds">
+        <strong>А вот не подойдёт, если вы:</strong>
+        уже опытный разработчик и знаете про RaiseCanExecuteChanged; работаете с веб-фреймворками (React, Vue), специфика WPF может быть неактуальна.
+    </div>
+
+    <h2 class="article-h2" id="sec-faq">Частые вопросы</h2>
+
+    <p class="faq-q">Почему bottom в WPF не нажимается, хотя команда привязана?</p>
+    <p>Самая частая причина: CanExecute команды возвращает false, потому что свойство, от которого она зависит, не в том состоянии. Сюда же отнесу смешивание Command и Click в одной кнопке и непривязанный CanExecute из-за незаданного свойства.</p>
+
+    <p class="faq-q">Почему в CRM на WPF не редактируются записи из-за привязки?</p>
+    <p>Если кнопки и поля привязаны к интерфейсу авторизации, стоит проверить через дебагер, не слетает ли оно в неожиданном месте. В моём случае виноват был именно флаг редактирования: он обрывал форму раньше, чем она успевала показаться.</p>
+
+    <p class="faq-q">Как отлаживать привязки данных в WPF?</p>
+    <p>Используйте MessageBox.Show для контрольного теста значений свойств в ключевых точках. В Visual Studio есть окно Output, куда выводятся ошибки привязок. Также помогает расширение Snoop для визуальной отладки XAML.</p>
+
+    <p class="faq-q">Почему свойство меняется, но интерфейс не обновляется?</p>
+    <p>Убедитесь, что в сеттере свойства вызывается OnPropertyChanged (или RaisePropertyChanged). Если вы меняете свойство, но не уведомляете UI, интерфейс не перерисуется.</p>
+
+    <p class="faq-q">Что делать, если IsAuthenticated меняется в неожиданном месте?</p>
+    <p>Ищите все места в коде, где устанавливается это свойство. В большом ViewModel это может происходить в нескольких методах. Используйте поиск по проекту (Ctrl+Shift+F) и проверяйте каждый случай.</p>
+
+    <p class="faq-q">Как связаны валидация данных и неработающая кнопка в CRM WPF?</p>
+    <p>Чаще всего никак, и в этом ловушка. Когда в срм кнопка молчит, сразу подозреваешь валидацию данных, но проблема может быть в другом месте. Поэтому сначала проверяйте, доходит ли команда до валидации, и только потом чините правила ввода.</p>
+
+    <hr class="article-hr">
+
+    <p>Но радость была недолгой. Стоило добавить новую функцию, как MainViewModel начал раздуваться. И я понял: нужна архитектура, иначе через пару месяцев я утону в моём коде. Об этом уже в следующей статье.</p>
+
+    <div class="article-tags">
+        <span>#WPF</span><span>#CSharp</span><span>#MVVM</span><span>#CRM</span><span>#SQLite</span><span>#отладка</span><span>#DevCrm</span>
+    </div>
+
+    <div class="footer-note">© 2026 Archeon Zero · Археон Ноль · цикл DevCrm</div>
+
+        		</article>
+        <aside class="sb sb-right" aria-label="Оглавление статьи">
+            <h3>Содержание статьи</h3>
+            <div class="toc">
+                <a href="#sec-lokalnaya-crm">Почему локальная CRM</a>
+                <a href="#sec-mvvm">MVVM</a>
+                <a href="#sec-model">Первая модель</a>
+                <a href="#sec-sqlite">SQLite</a>
+                <a href="#sec-interfeys">Интерфейс</a>
+                <a href="#sec-spotykalsya">Обо что спотыкался</a>
+                <a href="#sec-itog">Итог</a>
+                <a href="#sec-faq">Частые вопросы</a>
+            </div>
+        </aside>
+    </div>
+        </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2 class="article-h2">Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="../index.html#proekty">Проекты</a>
+            <a href="../index.html#stati">Статьи</a>
+            <a href="../index.html#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['term', 'paper', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
