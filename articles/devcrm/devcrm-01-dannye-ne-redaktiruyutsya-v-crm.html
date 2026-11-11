@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -10,12 +10,12 @@
     <meta property="og:site_name" content="Archeon Zero">
     <meta property="og:title" content="DevCrm 01 - Одна строка убивала кнопку «Новый клиент» в моей CRM на WPF">
     <meta property="og:description" content="Одна строка кода ломала управление контактами в CRM на WPF: кнопка «Новый клиент» молчала. Как выглядит такой баг у привязки данных в MVVM.">
-    <meta property="og:image" content="imgs/devcrm-01-01-crm-contacts-button-refuses.png">
+    <meta property="og:image" content="img/devcrm-01-01-crm-contacts-button-refuses.png">
     <meta property="article:published_time" content="2026-11-07T00:00:00+03:00">
     <meta property="article:section" content="Разработка">
     <meta property="article:tag" content="WPF, C#, MVVM, CRM, SQLite, DevCrm">
-    <link rel="canonical" href="https://archeonzero.ru/articles/devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html">
-    <link rel="stylesheet" href="../themes.css">
+    <link rel="canonical" href="https://archeonzero.ru/articles/devcrm/devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html">
+    <link rel="stylesheet" href="../../themes.css">
     <style>
         /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
         .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
@@ -36,6 +36,14 @@
         .faq-q { font-weight: 700; margin-top: 22px; }
         .article-tags { margin: 12px 0; }
         .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        .article-nav { display: flex; gap: 12px; margin: 34px 0 8px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .article-nav-link { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-decoration: none;
+                            background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+                            transition: border-color .18s, background .18s; }
+        .article-nav-link:hover { border-color: var(--accent); background: var(--surface-2); }
+        .article-nav-next { justify-content: flex-end; text-align: right; }
+        .article-nav-arrow { font-size: 20px; color: var(--accent); line-height: 1; }
+        .article-nav-title { font-size: 13.5px; line-height: 1.4; color: var(--ink-soft); display: block; }
         /* Две зоны-сайдбара (фикс. при скролле, как глава книги):
            слева — статьи цикла DevCrm; справа — оглавление статьи. Контент — по центру. */
         .layout { display: flex; gap: 28px; align-items: flex-start; max-width: 1260px; margin: 0 auto; padding: 0 24px; }
@@ -56,13 +64,29 @@
         .sb .toc a::before { counter-increment: toc; content: counter(toc) ". "; color: var(--muted); }
         @media (max-width: 1100px) {
             .sb-right { display: none; }
-            .layout { flex-wrap: wrap; }
         }
         @media (max-width: 900px) {
             .layout { flex-direction: column; padding: 0 16px; }
             .layout article { max-width: 100%; }
             .sb { width: 100%; flex: 1 1 auto; position: static; max-height: none; order: -1; }
         }
+        /* Плавающая кнопка-бургер для оглавления (появляется вместо скрытого сайдбара на узких экранах) */
+        .toc-toggle { display: none; position: fixed; top: 14px; right: 14px; z-index: 1000;
+                      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+                      background: var(--surface); color: var(--ink); cursor: pointer;
+                      align-items: center; justify-content: center; font-size: 18px;
+                      box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: background .18s, border-color .18s; }
+        .toc-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+        .toc-panel { display: none; position: fixed; top: 66px; right: 14px; z-index: 1000;
+                     width: 240px; max-height: calc(100vh - 90px); overflow-y: auto;
+                     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                     padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+        .toc-panel.open { display: block; }
+        .toc-panel h3 { font-family: Georgia, serif; font-size: 12px; margin: 0 0 8px; letter-spacing: .08em;
+                        text-transform: uppercase; color: var(--muted); }
+        .toc-panel a { display: block; padding: 4px 0; text-decoration: none; color: var(--ink-soft); font-size: 13.5px; line-height: 1.4; }
+        .toc-panel a:hover { color: var(--accent); }
+        @media (max-width: 1100px) { .toc-toggle { display: flex; } }
     </style>
 </head>
 <body>
@@ -243,11 +267,11 @@
     </div>
     <nav class="main-nav" aria-label="Основная навигация">
         <div class="container nav-inner">
-            <a class="nav-link" href="../index.html">Главная</a>
-            <a class="nav-link" href="../index.html#proekty">Проекты</a>
-            <a class="nav-link is-active" href="../index.html#stati">Статьи</a>
-            <a class="nav-link" href="../index.html#ploshadki">Площадки</a>
-            <a class="nav-link" href="../index.html#kontakty">Контакты</a>
+            <a class="nav-link" href="../../index.html">Главная</a>
+            <a class="nav-link" href="../../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../../index.html#kontakty">Контакты</a>
         </div>
     </nav>
 </header>
@@ -255,15 +279,15 @@
     <div class="container layout">
         <aside class="sb sb-left" aria-label="Разделы сайта и цикл DevCrm">
             <h3>Разделы сайта</h3>
-            <a href="../index.html">Главная</a>
-            <a href="../index.html#proekty">Проекты</a>
-            <a href="../index.html#stati">Статьи</a>
-            <a href="../index.html#ploshadki">Площадки</a>
-            <a href="../index.html#kontakty">Контакты</a>
+            <a href="../../index.html">Главная</a>
+            <a href="../../index.html#proekty">Проекты</a>
+            <a href="../../index.html#stati">Статьи</a>
+            <a href="../../index.html#ploshadki">Площадки</a>
+            <a href="../../index.html#kontakty">Контакты</a>
             <h3>Цикл DevCrm</h3>
             <a href="devcrm-00-razrabotka-crm-na-wpf.html"><strong>00</strong> Как делали CRM на WPF: от идеи до прототипа</a>
             <a class="sb-active" href="devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html"><strong>01</strong> Почему не редактируются контакты?</a>
-            <a href="https://teletype.in/@archeonzero/5w-wfACBNzI" target="_blank"><strong>02</strong> Архитектура, слои и первые модели</a>
+            <a href="devcrm-02-arhitektura-sloev-crm-na-wpf.html"><strong>02</strong> Архитектура, слои и первые модели</a>
             <a href="https://teletype.in/@archeonzero/mnDoAuTCnA_" target="_blank"><strong>03</strong> Корзина и мягкое удаление</a>
             <a href="https://teletype.in/@archeonzero/9GYsgd7nSAm" target="_blank"><strong>04</strong> Пользователи и роли</a>
             <a href="https://teletype.in/@archeonzero/TszNycO_oXQ" target="_blank"><strong>05</strong> «Кандовенько выглядит»</a>
@@ -279,7 +303,7 @@
     <h1 class="article-h1">DevCrm 01 - Одна строка убивала кнопку «Новый клиент» в моей CRM на WPF</h1>
 
     <figure>
-        <img src="imgs/devcrm-01-01-crm-contacts-button-refuses.png" alt="Кнопка управления контактами в CRM на WPF не реагирует на клик — интерфейс молчит">
+        <img src="img/devcrm-01-01-crm-contacts-button-refuses.png" alt="Кнопка управления контактами в CRM на WPF не реагирует на клик — интерфейс молчит">
         <figcaption>Когда кнопка управления контактами в CRM смотрит на тебя как на дурака.</figcaption>
     </figure>
 
@@ -324,7 +348,7 @@
     <p>Включаю mode следователя. Detective mode ON. Погнали. Буду разбираться, что происходит в этой CRM на уровне функций библиотеки WPF и привязок данных. Архитектура MVVM хороша тем, что слои разделены: модель данных, вью-модель с логикой и вью с разметкой. Но именно это разделение и сыграло со мной злую шутку — баг спрятался не в логике, а в связке между слоями, в том, как компоненты управления контактами получают сигнал о том, что запись готова к редактированию.</p>
 
     <figure>
-        <img src="imgs/devcrm-01-02-crm-contacts-access-detective.png" alt="Разбор кода привязки данных MVVM в CRM на WPF, поиск виновника сломанного управления контактами">
+        <img src="img/devcrm-01-02-crm-contacts-access-detective.png" alt="Разбор кода привязки данных MVVM в CRM на WPF, поиск виновника сломанного управления контактами">
         <figcaption>Раскинул мозгами и построил цепочку событий управления контактами в CRM.</figcaption>
     </figure>
 
@@ -352,7 +376,7 @@ Click="Button_Click"/&gt;</pre>
     <p>Тут уже кажется, что это не WPF, а полтергейст какой-то. Привязка данных работает, свойства меняются, а интерфейс живёт своей жизнью. Как будто WPF самостоятельная личность и творит свой личный беспредел.</p>
 
     <figure>
-        <img src="imgs/devcrm-01-03-crm-contacts-ghost-in-machine.png" alt="Призрак в машине: в интерфейсе CRM на WPF управление контактами молчит без видимой причины">
+        <img src="img/devcrm-01-03-crm-contacts-ghost-in-machine.png" alt="Призрак в машине: в интерфейсе CRM на WPF управление контактами молчит без видимой причины">
         <figcaption>Когда WPF сам решает судьбу управления контактами в CRM.</figcaption>
     </figure>
 
@@ -382,7 +406,7 @@ SelectedClient = null;
     <p>Стоп. Что?!</p>
 
     <figure>
-        <img src="imgs/devcrm-01-04-crm-contacts-eureka-access.png" alt="Озарение при отладке CRM на WPF: одна строка кода ломала привязку и управление контактами">
+        <img src="img/devcrm-01-04-crm-contacts-eureka-access.png" alt="Озарение при отладке CRM на WPF: одна строка кода ломала привязку и управление контактами">
         <figcaption>Одна строка ломала всё управление контактами в CRM.</figcaption>
     </figure>
 
@@ -395,7 +419,7 @@ SelectedClient = null;
     <p>И внутри что-то выдохнуло. Тот самый ком в горле, который стоял с самого начала, рассосался. Пальцы перестали быть холодными. Я откинулся на спинку стула и впервые за несколько часов нормально вдохнул. Как будто свисток сняли с закипающего чайника.</p>
 
     <figure>
-        <img src="imgs/devcrm-01-05-crm-contacts-relief.png" alt="Разрядка после починки CRM на WPF: управление контактами снова работает, интерфейс ожил">
+        <img src="img/devcrm-01-05-crm-contacts-relief.png" alt="Разрядка после починки CRM на WPF: управление контактами снова работает, интерфейс ожил">
         <figcaption>Свисток сняли с чайника: управление контактами в CRM ожило.</figcaption>
     </figure>
 
@@ -457,22 +481,45 @@ SelectedClient = null;
         <span>#WPF</span><span>#CSharp</span><span>#MVVM</span><span>#CRM</span><span>#SQLite</span><span>#отладка</span><span>#DevCrm</span>
     </div>
 
+    <nav class="article-nav" aria-label="Навигация по циклу">
+        <a class="article-nav-link" href="devcrm-00-razrabotka-crm-na-wpf.html">
+            <span class="article-nav-arrow">←</span>
+            <span class="article-nav-label">
+                <span class="article-nav-title">00 · Как делали CRM на WPF: от идеи до прототипа</span>
+            </span>
+        </a>
+        <a class="article-nav-link article-nav-next" href="devcrm-02-arhitektura-sloev-crm-na-wpf.html">
+            <span class="article-nav-label">
+                <span class="article-nav-title">02 · Архитектура, слои и первые модели</span>
+            </span>
+            <span class="article-nav-arrow">→</span>
+        </a>
+    </nav>
+
     <div class="footer-note">© 2026 Archeon Zero · Археон Ноль · цикл DevCrm</div>
 
         		</article>
         <aside class="sb sb-right" aria-label="Оглавление статьи">
             <h3>Содержание статьи</h3>
             <div class="toc">
-                <a href="#sec-lokalnaya-crm">Почему локальная CRM</a>
-                <a href="#sec-mvvm">MVVM</a>
-                <a href="#sec-model">Первая модель</a>
-                <a href="#sec-sqlite">SQLite</a>
-                <a href="#sec-interfeys">Интерфейс</a>
-                <a href="#sec-spotykalsya">Обо что спотыкался</a>
-                <a href="#sec-itog">Итог</a>
+                <a href="#sec-stupor">Ступор</a>
+                <a href="#sec-sledy">Три ложных следа</a>
+                <a href="#sec-string">Одна строка</a>
+                <a href="#sec-vyvod">Вывод</a>
                 <a href="#sec-faq">Частые вопросы</a>
             </div>
         </aside>
+        <button class="toc-toggle" aria-expanded="false" aria-controls="tocPanel" title="Содержание статьи">☰</button>
+        <div class="toc-panel" id="tocPanel" role="navigation" aria-label="Содержание статьи (мобильное)">
+            <h3>Содержание статьи</h3>
+            <div class="toc">
+                <a href="#sec-stupor">Ступор</a>
+                <a href="#sec-sledy">Три ложных следа</a>
+                <a href="#sec-string">Одна строка</a>
+                <a href="#sec-vyvod">Вывод</a>
+                <a href="#sec-faq">Частые вопросы</a>
+            </div>
+        </div>
     </div>
         </div>
 </main>
@@ -575,9 +622,9 @@ SelectedClient = null;
         </div>
         <div class="footer-col">
             <h3>Разделы</h3>
-            <a href="../index.html#proekty">Проекты</a>
-            <a href="../index.html#stati">Статьи</a>
-            <a href="../index.html#ploshadki">Площадки</a>
+            <a href="../../index.html#proekty">Проекты</a>
+            <a href="../../index.html#stati">Статьи</a>
+            <a href="../../index.html#ploshadki">Площадки</a>
         </div>
         <div class="footer-col">
             <h3>Площадки</h3>
@@ -656,6 +703,27 @@ SelectedClient = null;
         // закрыть по уходу мыши из зоны оформления
         var zone = document.querySelector('.theme-switcher');
         if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+    // Плавающая кнопка-бургер «Содержание»
+    var tocToggle = document.querySelector('.toc-toggle');
+    var tocPanel = document.getElementById('tocPanel');
+    if (tocToggle && tocPanel) {
+        tocToggle.addEventListener('click', function () {
+            var open = tocPanel.classList.toggle('open');
+            tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        tocPanel.addEventListener('click', function (e) {
+            if (e.target && e.target.tagName === 'A') {
+                tocPanel.classList.remove('open');
+                tocToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (!tocPanel.classList.contains('open')) { return; }
+            if (tocPanel.contains(e.target) || (tocToggle && tocToggle.contains(e.target))) { return; }
+            tocPanel.classList.remove('open');
+            tocToggle.setAttribute('aria-expanded', 'false');
+        });
     }
 })();
 </script>

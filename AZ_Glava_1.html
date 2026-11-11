@@ -25,6 +25,23 @@
         .chapter-nav a:hover { color: var(--accent-dark); }
         .chapter-nav .cn-sub { display: block; font-size: 10px; font-weight: 400; color: var(--muted); margin-top: 1px; }
         @media (max-width: 1100px) { .chapter-nav { display: none; } }
+        /* Плавающая кнопка-бургер для «частей» главы (вместо скрытого chapter-nav на узких экранах) */
+        .toc-toggle { display: none; position: fixed; top: 14px; right: 14px; z-index: 1000;
+                      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+                      background: var(--surface); color: var(--ink); cursor: pointer;
+                      align-items: center; justify-content: center; font-size: 18px;
+                      box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: background .18s, border-color .18s; }
+        .toc-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+        .toc-panel { display: none; position: fixed; top: 66px; right: 14px; z-index: 1000;
+                     width: 240px; max-height: calc(100vh - 90px); overflow-y: auto;
+                     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                     padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+        .toc-panel.open { display: block; }
+        .toc-panel h3 { font-family: Georgia, serif; font-size: 12px; margin: 0 0 8px; letter-spacing: .08em;
+                        text-transform: uppercase; color: var(--muted); }
+        .toc-panel a { display: block; padding: 4px 0; text-decoration: none; color: var(--ink-soft); font-size: 13.5px; line-height: 1.4; }
+        .toc-panel a:hover { color: var(--accent); }
+        @media (max-width: 1100px) { .toc-toggle { display: flex; } }
     </style>
 </head>
 <body>
@@ -216,6 +233,13 @@
                 <a href="#ch2">Часть 2<span class="cn-sub">сканнер «Велес»</span></a>
                 <a href="#ch3">Часть 3<span class="cn-sub">НаЖивое</span></a>
             </nav>
+            <button class="toc-toggle" aria-expanded="false" aria-controls="tocPanel" title="Части главы">☰</button>
+            <div class="toc-panel" id="tocPanel" role="navigation" aria-label="Части главы (мобильное)">
+                <h3>Части главы</h3>
+                <a href="#ch1">Часть 1 — утро и встреча</a>
+                <a href="#ch2">Часть 2 — сканнер «Велес»</a>
+                <a href="#ch3">Часть 3 — НаЖивое</a>
+            </div>
 
 <section id="ch1">
 <h2 class="part-title">Часть 1. Утро и встреча</h2>
@@ -517,6 +541,10 @@
     if(_tg&&_sw){ _tg.addEventListener('click',function(){ var _o=_sw.classList.toggle('is-open'); _tg.setAttribute('aria-expanded',_o?'true':'false'); });
       _sw.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='BUTTON'){_closeSw();} });
       _sw.addEventListener('mouseleave',_closeSw); }
+    var _tt=document.querySelector('.toc-toggle'), _tp=document.getElementById('tocPanel');
+    if(_tt&&_tp){ _tt.addEventListener('click',function(){ var _o=_tp.classList.toggle('open'); _tt.setAttribute('aria-expanded',_o?'true':'false'); });
+      _tp.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='A'){ _tp.classList.remove('open'); _tt.setAttribute('aria-expanded','false'); } });
+      document.addEventListener('click',function(e){ if(!_tp.classList.contains('open'))return; if(_tp.contains(e.target)||(_tt&&_tt.contains(e.target)))return; _tp.classList.remove('open'); _tt.setAttribute('aria-expanded','false'); }); }
   })();
 </script>
 

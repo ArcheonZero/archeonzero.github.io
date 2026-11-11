@@ -22,7 +22,7 @@
 | `index.html` | Главная страница — визитка со всеми разделами |
 | `themes.css` | Тематическая раскраска (7 тем, переключаются кнопкой) |
 | `CNAME` | Кастомный домен `archeonzero.ru` |
-| `articles/` | Статьи цикла DevCrm (+ иллюстрации в `articles/imgs/`) |
+| `articles/devcrm/` | Статьи цикла DevCrm (html + иллюстрации в `articles/devcrm/img/`) |
 | `ArcheonZreborn.html` | Повесть «Archeon Z: перерождение» (текст) |
 | `AZ_Glava_1.html` | Полная первая глава повести (3 части) |
 | `README.md` | Этот файл |
@@ -35,7 +35,7 @@
 до рабочего приложения. Без прикрас — с багами, рефакторингом и архитектурой, которая
 выстраивается по ходу дела.
 
-✦ [DevCrm 00 — Меня парализовало перед собственным проектом CRM на WPF: ни назад, ни вперёд](https://archeonzero.ru/articles/devcrm-00-razrabotka-crm-na-wpf.html)
+✦ [DevCrm 00 — Меня парализовало перед собственным проектом CRM на WPF: ни назад, ни вперёд](https://archeonzero.ru/articles/devcrm/devcrm-00-razrabotka-crm-na-wpf.html)
 
 Стек цикла: C# / .NET 8 · WPF · MVVM · SQLite (Microsoft.Data.Sqlite).
 Код проекта — в репозитории [CrmArcheonzero](https://github.com/ArcheonZero/CrmArcheonzero).
