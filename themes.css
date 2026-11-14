@@ -252,6 +252,127 @@ body[data-theme="paper"] .theme-switcher button { background: var(--line); color
 body[data-theme="paper"] .theme-switcher button[aria-pressed="true"] { background: var(--accent); color: #fff; }
 
 /* ==================================================================
+   ТЕМА — КЛАССИКА (mono): чёрно-белая, редакционный минимализм
+   ================================================================== */
+body[data-theme="mono"] {
+    --bg: #f7f6f3; --surface: #ffffff; --surface-2: #efeeea;
+    --ink: #111214; --ink-soft: #2c2f33; --muted: #6a6f75;
+    --line: #e2e0da; --line-strong: #cfccc4;
+    --accent: #111214; --accent-dark: #000000;
+    --deep: #111214; --deep-2: #1c1f22;
+    --logo-stem: #8a8a86; --logo-c1: #111214; --logo-c2: #4a4d52; --logo-c3: #cfccc4;
+    --font-display: Georgia, "Times New Roman", serif;
+    background: var(--bg); color: var(--ink);
+}
+body[data-theme="mono"] a:hover { color: var(--ink); }
+body[data-theme="mono"] .topbar { background: var(--deep); color: #c9c9c6; }
+body[data-theme="mono"] .site-header { background: var(--surface); border-bottom: 1px solid var(--ink); }
+body[data-theme="mono"] .main-nav { border-top: 1px solid var(--line); }
+body[data-theme="mono"] .brand-mark { background: var(--deep); color: #fff; }
+body[data-theme="mono"] .brand-name { color: var(--ink); }
+body[data-theme="mono"] .brand-name em { color: var(--ink); font-style: normal; }
+body[data-theme="mono"] .brand-sub { color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+body[data-theme="mono"] .header-desc { color: var(--ink-soft); }
+body[data-theme="mono"] .nav-link { color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; font-size: 12.5px; }
+body[data-theme="mono"] .nav-link:hover, body[data-theme="mono"] .nav-link.is-active { color: var(--ink); border-bottom-color: var(--ink); }
+body[data-theme="mono"] .hero-main { background: linear-gradient(150deg, #14161a 0%, #1f2327 60%, #2a2e33 100%); color: #fff; box-shadow: none; border: 1px solid #2a2e33; }
+body[data-theme="mono"] .badge { background: #fff; color: #111214; letter-spacing: .1em; text-transform: uppercase; }
+body[data-theme="mono"] .hero-title .h-accent { color: #ffffff; }
+body[data-theme="mono"] .hero-excerpt { color: rgba(255,255,255,.78); }
+body[data-theme="mono"] .hero-links a { background: #fff; color: #111214; }
+body[data-theme="mono"] .hero-links a:hover { background: #dedcd6; }
+body[data-theme="mono"] .hero-links a.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35); }
+body[data-theme="mono"] .section-head { border-bottom: 2px solid var(--ink); }
+body[data-theme="mono"] .section-head h2 { letter-spacing: .01em; }
+body[data-theme="mono"] .section-head h2 span, body[data-theme="mono"] .section-link, body[data-theme="mono"] .card-tag { color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+body[data-theme="mono"] .section-lead { color: var(--ink-soft); }
+body[data-theme="mono"] .card { background: var(--surface); border-color: var(--line-strong); }
+body[data-theme="mono"] .card:hover { border-color: var(--ink); box-shadow: 0 14px 34px rgba(17,18,20,.10); }
+body[data-theme="mono"] .card-mark { color: var(--ink); }
+body[data-theme="mono"] .card h3 { color: var(--ink); }
+body[data-theme="mono"] .card p { color: var(--muted); }
+body[data-theme="mono"] .card a.card-link { color: var(--ink); border-bottom: 1px solid var(--ink); }
+body[data-theme="mono"] .side-block { background: var(--surface); border-color: var(--line); }
+body[data-theme="mono"] .side-title { color: var(--ink); border-bottom-color: var(--ink); letter-spacing: .06em; text-transform: uppercase; font-size: 12.5px; }
+body[data-theme="mono"] .side-title span { color: var(--muted); }
+body[data-theme="mono"] .side-block a { color: var(--ink-soft); border-bottom-color: var(--line); }
+body[data-theme="mono"] .side-block a:hover { color: var(--ink); }
+body[data-theme="mono"] .side-block a strong { color: var(--muted); }
+body[data-theme="mono"] .site-footer { background: var(--deep); color: #b8b8b4; }
+body[data-theme="mono"] .footer-brand h2 { color: #fff; }
+body[data-theme="mono"] .footer-brand h2 em { color: #fff; font-style: normal; }
+body[data-theme="mono"] .footer-brand p { color: #b8b8b4; }
+body[data-theme="mono"] .footer-col h3 { color: #fff; letter-spacing: .06em; text-transform: uppercase; font-size: 12.5px; }
+body[data-theme="mono"] .footer-col a { color: #b8b8b4; }
+body[data-theme="mono"] .footer-col a:hover { color: #fff; }
+body[data-theme="mono"] .footer-bottom { border-top-color: rgba(255,255,255,.12); color: #8a8a86; }
+body[data-theme="mono"] .brand-mark--footer { background: rgba(255,255,255,.1); color: #fff; }
+body[data-theme="mono"] .theme-switcher { background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); }
+body[data-theme="mono"] .theme-switcher button { background: var(--line); color: var(--ink); }
+body[data-theme="mono"] .theme-switcher button[aria-pressed="true"] { background: var(--ink); color: #fff; }
+body[data-theme="mono"] img { filter: grayscale(1) contrast(1.04); }
+
+/* ==================================================================
+   ТЕМА — ЛЁД (ice): светлая, холодная, циановый акцент
+   ================================================================== */
+body[data-theme="ice"] {
+    --bg: #f4fbff; --surface: #ffffff; --surface-2: #e9f5fb;
+    --ink: #0d1a22; --ink-soft: #27404e; --muted: #5d7b8a;
+    --line: #d6e8f2; --line-strong: #b9d8e8;
+    --accent: #0891b2; --accent-dark: #0e7490;
+    --deep: #0b2230; --deep-2: #123243;
+    --logo-stem: #7fa9bb; --logo-c1: #0891b2; --logo-c2: #0e7490; --logo-c3: #b9d8e8;
+    --font-display: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    background: linear-gradient(180deg, #f7fdff 0%, var(--bg) 320px);
+    color: var(--ink);
+}
+body[data-theme="ice"] a:hover { color: var(--accent-dark); }
+body[data-theme="ice"] .topbar { background: var(--deep); color: #a8c4d2; }
+body[data-theme="ice"] .site-header { background: var(--surface); border-bottom: 1px solid var(--line); }
+body[data-theme="ice"] .main-nav { border-top: 1px solid var(--line); }
+body[data-theme="ice"] .brand-mark { background: var(--deep); color: #67e8f9; }
+body[data-theme="ice"] .brand-name { color: var(--ink); }
+body[data-theme="ice"] .brand-name em { color: var(--accent-dark); font-style: normal; }
+body[data-theme="ice"] .brand-sub { color: var(--muted); }
+body[data-theme="ice"] .header-desc { color: var(--ink-soft); }
+body[data-theme="ice"] .nav-link { color: var(--ink-soft); }
+body[data-theme="ice"] .nav-link:hover, body[data-theme="ice"] .nav-link.is-active { color: var(--accent-dark); border-bottom-color: var(--accent); }
+body[data-theme="ice"] .hero-main { background: linear-gradient(145deg, #0b2230 0%, #123243 55%, #0e5f78 100%); color: #fff; box-shadow: 0 18px 48px rgba(13,26,34,.10); }
+body[data-theme="ice"] .badge { background: var(--accent-dark); color: #fff; }
+body[data-theme="ice"] .hero-title .h-accent { color: #67e8f9; }
+body[data-theme="ice"] .hero-excerpt { color: rgba(255,255,255,.84); }
+body[data-theme="ice"] .hero-links a { background: var(--accent-dark); color: #fff; }
+body[data-theme="ice"] .hero-links a:hover { background: var(--accent-dark); }
+body[data-theme="ice"] .hero-links a.ghost { background: rgba(255,255,255,.12); color: #fff; border: 1px solid rgba(255,255,255,.28); }
+body[data-theme="ice"] .section-head { border-bottom-color: var(--line-strong); }
+body[data-theme="ice"] .section-head h2 span, body[data-theme="ice"] .section-link, body[data-theme="ice"] .card-tag { color: var(--accent-dark); }
+body[data-theme="ice"] .section-lead { color: var(--ink-soft); }
+body[data-theme="ice"] .card { background: var(--surface); border-color: var(--line); }
+body[data-theme="ice"] .card:hover { border-color: var(--accent); box-shadow: 0 18px 40px rgba(8,145,178,.14); }
+body[data-theme="ice"] .card-mark { color: var(--accent-dark); }
+body[data-theme="ice"] .card h3 { color: var(--ink); }
+body[data-theme="ice"] .card p { color: var(--muted); }
+body[data-theme="ice"] .card a.card-link { color: var(--accent-dark); border-bottom: 1px dotted #a9d7e6; }
+body[data-theme="ice"] .side-block { background: var(--surface); border-color: var(--line); }
+body[data-theme="ice"] .side-title { color: var(--ink); border-bottom-color: var(--line); }
+body[data-theme="ice"] .side-title span { color: var(--accent-dark); }
+body[data-theme="ice"] .side-block a { color: var(--ink-soft); border-bottom-color: var(--line); }
+body[data-theme="ice"] .side-block a:hover { color: var(--accent-dark); }
+body[data-theme="ice"] .side-block a strong { color: var(--accent-dark); }
+body[data-theme="ice"] .site-footer { background: var(--deep); color: #a8c4d2; }
+body[data-theme="ice"] .footer-brand h2 { color: #fff; }
+body[data-theme="ice"] .footer-brand h2 em { color: #67e8f9; font-style: normal; }
+body[data-theme="ice"] .footer-brand p { color: #a8c4d2; }
+body[data-theme="ice"] .footer-col h3 { color: #fff; }
+body[data-theme="ice"] .footer-col a { color: #a8c4d2; }
+body[data-theme="ice"] .footer-col a:hover { color: #fff; }
+body[data-theme="ice"] .footer-bottom { border-top-color: rgba(255,255,255,.12); color: #7fa0b1; }
+body[data-theme="ice"] .brand-mark--footer { background: rgba(255,255,255,.1); color: #fff; }
+body[data-theme="ice"] .theme-switcher { background: var(--surface); border: 1px solid var(--line); color: var(--ink-soft); }
+body[data-theme="ice"] .theme-switcher button { background: var(--line); color: var(--ink); }
+body[data-theme="ice"] .theme-switcher button[aria-pressed="true"] { background: var(--accent-dark); color: #fff; }
+
+/* ==================================================================
    ТЕМА 3 — ФРАКТАЛ (чёрно-голубая, циан, тёмная)
    ================================================================== */
 body[data-theme="cyan"] {

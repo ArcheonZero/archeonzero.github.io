@@ -50,8 +50,10 @@
 <button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
 <div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
     <span class="ts-label">оформление</span>
+        <button data-theme-btn="mono">классика</button>
     <button data-theme-btn="term">терминал</button>
     <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="ice">лёд</button>
     <button data-theme-btn="cyan">фрактал</button>
     <button data-theme-btn="soft">мягкий</button>
     <button data-theme-btn="amber">янтарь</button>
@@ -525,7 +527,7 @@
 </footer>
 
 <script>
-(function(){ var THEMES=['term', 'paper', 'cyan', 'soft', 'amber', 'emerald', 'amethyst']; var LOGOS=['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+(function(){ var THEMES = ['mono', 'term', 'paper', 'ice', 'cyan', 'soft', 'amber', 'emerald', 'amethyst']; var LOGOS=['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
     var KEY='archeonzero-theme', KEY_LOGO='archeonzero-logo', body=document.body;
     function apply(t){ if(!t||THEMES.indexOf(t)===-1)t='paper'; body.setAttribute('data-theme',t);
       document.querySelectorAll('[data-theme-btn]').forEach(function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-theme-btn')===t?'true':'false'); }); }
