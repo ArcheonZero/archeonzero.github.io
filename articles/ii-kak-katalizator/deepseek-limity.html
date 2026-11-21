@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лимиты DeepSeek для бесплатных: что ограничили, откуда 8,6-кратный рост и что делать — Archeon Zero</title>
+    <meta name="description" content="Лимиты DeepSeek 2026: 40 000 знаков на сообщение, старые диалоги закрываются через 7 дней, дневная квота не раскрыта. Разбор причин, трёх версий перегрузки и плана действий.">
+    <meta name="keywords" content="лимиты deepseek, лимит deepseek, deepseek не работает, дневная квота, deepseek api, deepseek flash, openrouter, нейросети">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Archeon Zero">
+    <meta property="og:title" content="Лимиты DeepSeek для бесплатных: что ограничили, откуда 8,6-кратный рост и что делать">
+    <meta property="og:description" content="Лимиты DeepSeek 2026: 40 000 знаков на сообщение, старые диалоги закрываются через 7 дней, дневная квота не раскрыта. Разбор причин, трёх версий перегрузки и плана действий.">
+    <meta property="og:image" content="img/023-01-deepseek-limit-skrinshot.jpg">
+    <meta property="article:section" content="Нейросети">
+    <meta property="article:tag" content="DeepSeek, нейросети, ИИ, лимиты, API, OpenRouter">
+    <style>
+        /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
+        .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
+        .article-topline { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; color: inherit; opacity: .75; margin-bottom: 8px; }
+        .article-h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+        .article-lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 0; }
+        .article-hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+        .article-h2 { font-family: Georgia, serif; font-size: 26px; line-height: 1.25; margin: 40px 0 14px; }
+        .article p { font-size: 17px; line-height: 1.75; color: var(--ink); }
+        .article-lyrics { font-family: Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-soft); margin: 8px 0; }
+        .article-lyrics-attrib { margin-top: 6px; color: var(--muted); font-size: 14px; font-style: normal; }
+        .article figure { margin: 32px 0; }
+        .article figure img { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+        .article figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; font-style: italic; }
+        .article pre { background: var(--deep); color: #dce6f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 14.5px; line-height: 1.5; }
+        .article-kinds { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0; }
+        .article-kinds strong { display: block; margin-bottom: 6px; }
+        .faq-q { font-weight: 700; margin-top: 22px; }
+        .article-tags { margin: 12px 0; }
+        .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        .article-nav { display: flex; gap: 12px; margin: 34px 0 8px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .article-nav-link { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-decoration: none;
+                            background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+                            transition: border-color .18s, background .18s; }
+        .article-nav-link:hover { border-color: var(--accent); background: var(--surface-2); }
+        .article-nav-next { justify-content: flex-end; text-align: right; }
+        .article-nav-arrow { font-size: 20px; color: var(--accent); line-height: 1; }
+        .article-nav-title { font-size: 13.5px; line-height: 1.4; color: var(--ink-soft); display: block; }
+        /* Две зоны-сайдбара (фикс. при скролле, как глава книги):
+           слева — статьи цикла DevCrm; справа — оглавление статьи. Контент — по центру. */
+        .layout { display: flex; gap: 28px; align-items: flex-start; max-width: 1260px; margin: 0 auto; padding: 0 24px; }
+        .layout article { flex: 1 1 auto; max-width: 760px; margin: 0; min-width: 0; order: 2; }
+        .sb { width: 270px; flex: 0 0 270px; position: sticky; top: 24px; align-self: flex-start;
+              max-height: calc(100vh - 48px); overflow-y: auto; padding: 20px 18px;
+              background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+              font-size: 13.5px; line-height: 1.45; }
+        .sb-left { order: 1; }
+        .sb-right { order: 3; }
+        .sb h3 { font-family: Georgia, serif; font-size: 12px; margin: 14px 0 8px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--muted); }
+        .sb h3:first-child { margin-top: 0; }
+        .sb a { display: block; padding: 3px 0; text-decoration: none; color: var(--ink-soft); }
+        .sb a:hover { color: var(--accent); }
+        .sb a.sb-active { color: var(--accent); font-weight: 700; }
+        .sb .toc { counter-reset: toc; }
+        .sb .toc a::before { counter-increment: toc; content: counter(toc) ". "; color: var(--muted); }
+        @media (max-width: 1100px) {
+            .sb-right { display: none; }
+
+        }
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; padding: 0 16px; }
+            .layout article { max-width: 100%; }
+            .sb { width: 100%; flex: 1 1 auto; position: static; max-height: none; order: -1; }
+        }
+        /* Плавающая кнопка-бургер для оглавления (появляется вместо скрытого сайдбара на узких экранах) */
+        .toc-toggle { display: none; position: fixed; top: 14px; right: 14px; z-index: 1000;
+                      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+                      background: var(--surface); color: var(--ink); cursor: pointer;
+                      align-items: center; justify-content: center; font-size: 18px;
+                      box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: background .18s, border-color .18s; }
+        .toc-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+        .toc-panel { display: none; position: fixed; top: 66px; right: 14px; z-index: 1000;
+                     width: 240px; max-height: calc(100vh - 90px); overflow-y: auto;
+                     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                     padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+        .toc-panel.open { display: block; }
+        .toc-panel h3 { font-family: Georgia, serif; font-size: 12px; margin: 0 0 8px; letter-spacing: .08em;
+                        text-transform: uppercase; color: var(--muted); }
+        .toc-panel a { display: block; padding: 4px 0; text-decoration: none; color: var(--ink-soft); font-size: 13.5px; line-height: 1.4; }
+        .toc-panel a:hover { color: var(--accent); }
+        @media (max-width: 1100px) { .toc-toggle { display: flex; } }
+    </style>
+    <link rel="stylesheet" href="../../themes.css">
+    <style>
+        /* fallback-палитра, если themes.css недоступен локально */
+        :root { --paper:#f6f4ee; --surface:#fffdf8; --surface-2:#f1ede3; --ink:#171a1f; --ink-soft:#33383f;
+                --muted:#6b7078; --line:#e3ded3; --accent:#c2410c; --deep:#121a24;
+                --logo-stem:#171a1f; --logo-c1:#c2410c; --logo-c2:#b45309; --logo-c3:#6b7078; }
+    </style></head>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+        <button data-theme-btn="mono">классика</button>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="ice">лёд</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../../index.html">Главная</a>
+            <a class="nav-link" href="../../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../../index.html#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+<nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../../index.html">Главная</a>
+            <a class="nav-link" href="../../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../../index.html#kontakty">Контакты</a>
+        </div>
+    </nav>
+<main class="site-main" id="main">
+    <div class="container layout">
+<aside class="sb sb-left" aria-label="Разделы сайта и цикл об ИИ">
+    <h3>Разделы сайта</h3>
+    <a href="../../index.html">Главная</a>
+    <a href="../../index.html#proekty">Проекты</a>
+    <a href="../../index.html#stati">Статьи</a>
+    <a href="../../index.html#ploshadki">Площадки</a>
+    <a href="../../index.html#kontakty">Контакты</a>
+    <h3>Цикл об ИИ и нейросетях</h3>
+    <a class="sb-active" href="deepseek-limity.html"><strong>023</strong> Лимиты DeepSeek: что ограничили</a>
+    <a href="https://teletype.in/@archeonzero/tzRy6yAz0FA" target="_blank">Нейросеть Qwen в 2026</a>
+    <a href="https://teletype.in/@archeonzero/TKkJXqqqwgD" target="_blank">Бесплатные нейросети 2026: какую выбрать</a>
+    <a href="https://teletype.in/@archeonzero/QPNcxhS3Hdh" target="_blank">Бесплатные нейросети и ИИ-агенты: честный разбор</a>
+    <a href="https://teletype.in/@archeonzero/H-Vh-ax7obe" target="_blank">Чему ИИ нас учит</a>
+</aside>
+        <article class="article">
+    <div class="article-topline">ИИ как катализатор · № 023 · DeepSeek</div>
+    <h1 class="article-h1">Лимиты DeepSeek для бесплатных: что ограничили, откуда 8,6-кратный рост и что делать</h1>
+
+    <figure>
+        <img src="img/023-01-deepseek-limit-skrinshot.jpg" alt="скриншот лимита DeepSeek">
+        <figcaption>Так лимит выглядит вживую: скриншот автора, 20 ноября 2026, 16:54 — «Сервер занят. Достигнут лимит использования».</figcaption>
+    </figure>
+    <p class="article-lead">Лимиты DeepSeek для бесплатных: не больше 40 000 знаков на сообщение, старые диалоги закрываются через семь дней, дневная квота не раскрыта. За четыре месяца недельная нагрузка выросла с 7,22 до 62,2 трлн токенов, и компания ответила тихим ограничением. Разбираю, что именно порезали, откуда взялся рост, три версии перегрузки и что делать, когда deepseek не работает.</p>
+    <h2 class="article-h2" id="sec-utro-kogda-deepseek-vklyuchil-limit">Утро, когда DeepSeek включил лимит</h2>
+    <p>Утро начинается с дороги на работу. В вагоне я открываю DeepSeek — бесплатную нейросеть, в которой с прошлого вечера лежит контекст: куски текста, который мы разбирали, десятки уточнений, готовый задел. Загружаю свежий фрагмент и задаю простой вопрос: ну что скажешь на эту тему? Интерфейс знакомый до мелочей, и ничего не предвещает сюрприза.</p>
+    <p>Мигают точечки — модель думает. Через пару секунд вместо ответа выскакивает сообщение: «Сервер занят. Достигнут лимит использования». Я протираю глаза: первая мысль — сеть. Перезагружаю чат, проверяю соединение, пробую снова. Сообщение не пропадает. И тут до меня доходит: похоже, приплыли. Система, которая ещё вчера отвечала за секунду, теперь просто отказывалась работать.</p>
+    <p><em>Не скрою: обидно было не за само сообщение, а за то, что в этом чате осталась половина работы.</em></p>
+    <figure>
+        <img src="img/023-03-deepseek-limity-utro.png" alt="утро с уведомлением">
+        <figcaption>Утро 16 ноября: вместо ответа — серое уведомление. Перезапуск не помогает: это не сбой, а новые правила.</figcaption>
+    </figure>
+    <h2 class="article-h2" id="sec-pochemu-deepseek-eto-sdelal-konchilas-mo">Почему DeepSeek это сделал: кончилась мощность</h2>
+    <p>Короткий ответ: у модели DeepSeek кончилась мощность. За это время недельный объём вырос <strong>с 7,22 до 62,2 трлн токенов — в 8,6 раза</strong>, — а железо за это время не выросло ни в какую кратность. Если честно, восемь раз за четыре месяца — это скорость не продукта, а эпидемии. Серверы не масштабируются так же быстро, как растут запросы, и в какой-то момент компания оказалась перед выбором: пускать всех и падать или кого-то притормозить.</p>
+    <p>Притормозили бесплатных. Ограничения ввели молча, без анонса — поэтому утром вместо ответа появилось уведомление, а не объяснение. Что именно порезали, откуда взялся рост и почему это случилось не в июле, а в ноябре, — дальше по порядку.</p>
+    <h2 class="article-h2" id="sec-limity-deepseek-dlya-besplatnyh-chto-ime">Лимиты DeepSeek для бесплатных: что именно ограничили</h2>
+    <p>Пользователи начали массово сообщать о проблемах вечером 14-го и в течение следующего дня, а 16-го об этом написали китайские СМИ — в первой публикации ITHome ограничения упоминались как «вчерашние». Так что дата у всех разная: для кого-то лимиты начались в пятницу вечером, для кого-то — в субботу утром.</p>
+    <p>Причина в уведомлении названа прямо: нехватка вычислительных мощностей. Другого объяснения у лимитов DeepSeek нет, и это, пожалуй, самое честное, что было во всей истории. Под раздачу, как ни странно, попали сайт и приложение — то есть всё, чем пользуется обычный человек; API-контур разработчиков она обошла стороной. Ввели ограничения молча: ни пресс-релиза, ни записи в блоге, ни единого набора правил. Сроков снятия компания не назвала до сих пор, и это важная деталь: временную меру можно переждать, а новое правило — только принять. Разговоров о лимитах DeepSeek с тех пор меньше не стало: с лимитами DeepSeek столкнулись миллионы.</p>
+    <p>Лимиты DeepSeek для бесплатных — ровно три пункта, и каждый бьёт по своему сценарию работы.</p>
+    <ul>
+        <li><strong>Длинные диалоги.</strong> Переписку, которую не открывали больше семи дней, продолжить нельзя. Часть пользователей получила уведомление о пороге в 72 часа — это наблюдение, а не заявленное правило, но направление то же: старые чаты перестают быть рабочим инструментом и превращаются в архив.</li>
+        <li><strong>Длина ввода.</strong> Одно сообщение — примерно до 40 000 знаков. Для коротких вопросов это незаметно, для документа, договора или куска кода — заметно сразу: текст приходится резать на части, а контекст держать в голове самому. С длинным договором или логом это особенно неприятно: файл приходится резать вручную.</li>
+        <li><strong>Дневная квота.</strong> У кого-то она тает меньше чем за два часа — и назавтра всё повторяется. Размер её не раскрыт, время сброса индивидуально для аккаунта, и именно эта часть ограничений раздражает сильнее всего, потому что предсказать её нельзя.</li>
+    </ul>
+    <p><strong>API не тронули — тронули обычных пользователей.</strong> DeepSeek API остался прежним: для разработчиков всё по-прежнему — свои лимиты, оплата по токенам, стабильность зависит от бюджета, а не от дневной квоты. Поэтому в поиске про сбой дипсика всё чаще всплывает не чат, а API DeepSeek: у разработчиков свой счёт и своя квота, и их лимиты измеряются деньгами, а не часами ожидания. По-моему, это самое честное решение из всей истории: кто платит, тот получает предсказуемость.</p>
+    <p>Разница принципиальная: платный контур живёт по своим правилам, а бесплатный — по квоте. Нейросеть DeepSeek только что превратилась из «самого щедрого бесплатного ИИ» в продукт с поводком — при том, что платить за него по-прежнему негде.</p>
+    <p>Деталь, от которой и смешно, и грустно: 13 ноября компания открыла через API модели DeepSeek возможности своего приложения — веб-поиск с цитатами, чтение URL, ввод файлов, OCR, распознавание речи, синтез. Демо-чат выложили под лицензией MIT, то есть в виде готовой библиотеки для собственных сборок. Ставка на разработчиков сделана явно: каждая функция из списка уехала в API. А платного тарифа, чтобы оплатить тот же чат и не упираться в квоту, у обычных людей до сих пор нет.</p>
+    <p>Получается парадокс: бесплатно работать стало нельзя, а за деньги — пока не за что. И этот парадокс объясняет, почему следующая часть статьи вообще нужна: чтобы понять, откуда взялась нехватка мощностей, придётся вспомнить, как компания к ней пришла.</p>
+    <h2 class="article-h2" id="sec-dose-kompaniya-kotoraya-obrushila-uoll-s">Досье: компания, которая обрушила Уолл-стрит</h2>
+    <p>DeepSeek — китайский ИИ-стартап из Ханчжоу, зарегистрированный 17 июля 2023 года. За ним стоит Лян Вэньфэн — финансист и соучредитель хедж-фонда High-Flyer, из исследовательского подразделения которого проект и вырос. Компания с самого начала строилась вокруг эффективности, а не вокруг маркетинга: мне в этой истории нравится, что в ней нет волшебства — только математика, дешёвое железо и очень много запросов.</p>
+    <p>Всемирную известность ей принесла нейросеть DeepSeek-R1, вышедшая в январе 2025 года. Вокруг этой истории накопилось много красивых цифр: фраза «на 90% дешевле OpenAI» гуляет по статьям как цитата основателя, хотя в его интервью её нет. Проверяемое другое — обучение DeepSeek-V3 в техотчёте оценивалось в $5,6 млн при аренде H800 по $2 в час.</p>
+    <p>Рынок ответил мгновенно: 27 января 2025 года акции Nvidia упали на 17%, капитализация сократилась примерно на $589–593 млрд — крупнейшее однодневное падение в истории рынка США. Вместе с ней просели энергетика и инфраструктура, суммарно больше чем на $1 трлн.</p>
+    <p>И деталь, которая выстрелит в конце. В те же дни компания ограничила регистрацию новых пользователей: на статус-странице было сказано про «масштабные злонамеренные атаки». Обрати внимание на формулировку — не «всем порезали», а «ограничили регистрацию, действующие пользователи работают как обычно». Тогда на компанию действительно напали, и она ответила точечно: закрыла вход новым на пару дней, своих не тронув. Запомни этот ответ: в ноябре он будет выглядеть совсем иначе.</p>
+    <h2 class="article-h2" id="sec-hronologiya-nagruzki-kak-deepseek-vyros-">Хронология нагрузки: как DeepSeek вырос в восемь раз</h2>
+    <p>Нагрузка на нейросеть DeepSeek Flash выросла в 8,6 раза за четыре месяца — и вот как это происходило. Все цифры ниже — недельные срезы OpenRouter по конкретной модели V4.1-Flash-1017; это важно, потому что «DeepSeek целиком» и «одна модель в рейтинге» — разные величины, и складывать их нельзя. Признаюсь, такие графики я смотрю с двойным чувством: красивый рост и заранее известный финал.</p>
+    <p>Конец июля 2026. Семь дней с 27 июля по 2 августа дали 7,22 трлн токенов на OpenRouter и первое место по модели. Доля DeepSeek в общем объёме платформы к этому моменту выросла с 9% в начале года до 18–20% к июню, с провалом до 5% весной, когда агентные задачи перекроили трафик всего рынка. Рост был ровным, инфраструктура дышала, и ничто не предвещало, что через три месяца те же семь дней будут измеряться десятками триллионов.</p>
+    <p>Август — начало октября. По оценкам агрегаторов, объёмы держались в районе 10–15 трлн в неделю, без аномалий. 10 сентября вышла модель DeepSeek Flash V4.1 — и за первую неделю набрала 15,8 трлн токенов. Вся платформа OpenRouter за те же дни прогнала 128,4 трлн, то есть каждый восьмой токен пришёлся на новинку. Это был первый звоночек: модель оказалась не просто удачной, а настолько дешёвой, что её начали ставить в агентные циклы.</p>
+    <p>17 октября. Чекпоинт DeepSeek Flash под API-именем deepseek-flash обновился до V4.1-Flash-1017. В публичном блоге — тишина, ни слова; в API-документации — запись в тот же день, способ вызова и цены не меняются. Официальный прайс — $0,15 за миллион входных токенов и $0,60 за миллион выходных вне пиковых часов. Для агентов Flash от DeepSeek стал самой дешёвой точкой входа в линейку через API, и именно на него пришлась основная часть API-запросов.</p>
+    <p>Мышление в этом тарифе, между прочим, стоит копейки, а агент без мышления не работает. ИИ-агент не задаёт один вопрос: он крутит цикл — прочитать задачу, спланировать, написать код, запустить тест, найти ошибку, переписать. Каждый шаг — отдельный запрос к модели, и каждый запрос оплачен. Чем дешевле токен, тем больше шагов имеет смысл делать; чем больше шагов, тем больше нагрузка на железо. Вот эта связка и есть пружина всей истории.</p>
+    <p>Семь дней 19–25 октября. <strong>33,6 трлн токенов</strong> — почти впятеро к августовским 7,22. До восьмикратного рубежа оставалась ещё половина пути, но направление уже было очевидно: восемь раз к августу — рубеж, который возьмут в ноябре. В ту же неделю модель впервые вышла на первое место в мире по недельному потреблению. Старая V4.1 Flash оказалась второй с 18 трлн, и это минус 45% к прежним значениям: часть прироста дала миграция внутри линейки, на что прямо указывал разбор SUPERCRZY. Весь топ-5 рейтинга занял китайский ИИ, и это уже не совпадение, а смена центра тяжести.</p>
+    <p>Конец октября. Точной цифры этого отрезка в открытых источниках нет, поэтому восстановим её расчётом, как умеем: следующая неделя показала 56 трлн при росте +17%, значит перед ней было около 48, а это примерно +43% к 33,6. Лавина не остановилась — она начала тормозить.</p>
+    <p>Ноябрь. Отрезок 2–8 ноября — те же 56 трлн: нагрузка на нейросеть DeepSeek Flash держалась на прежнем уровне, и это уже подтверждённая цифра, а не оценка. Первое место в недельном рейтинге — в третий раз подряд. Отрезок 9–15-го — 59,2 трлн, плюс 6% и четвёртое место: рост замедлился, но не остановился. В отдельные дни нейросеть DeepSeek Flash прогоняла до 53% суточного трафика платформы — то есть больше половины всего, что шло через OpenRouter, в эти дни приходилось на одну модель.</p>
+    <p>Оговорка, без которой цифры врут: речь о конкретной модели V4.1-Flash-1017, а не о «DeepSeek целиком», и «первое место» — это рейтинг OpenRouter, а не мировой рынок инференса.</p>
+    <p>Итого: за два месяца тот же семидневный показатель вырос почти впятеро, за четыре — в 8,6 раза, с 7,22 до 62,2. Темп при этом падал: впятеро за неделю, затем расчётные сорок с небольшим, +17%, +6%. Взрыв перестал разгоняться, но он давит постоянным весом — и этот вес поднимает железо.</p>
+    <figure>
+        <img src="img/023-02-deepseek-flash-nagruzka.png" alt="график недельной нагрузки">
+        <figcaption>Нагрузка на DeepSeek Flash за четыре месяца: с 7,22 до 62,2 трлн токенов в неделю. Впервые за месяц неделю забрал Tencent Hy4 flash — 69,3.</figcaption>
+    </figure>
+    <p>Кит набрал полные лёгкие. И тут выяснилось, что воздуха в аквариуме ровно столько, сколько было.</p>
+    <h2 class="article-h2" id="sec-sboi-deepseek-chto-treschalo-po-shvam">Сбои DeepSeek: что трещало по швам</h2>
+    <p>Я, честно говоря, ждал этого раньше. Сбои DeepSeek начались с доступности: с октября статус-страница зафиксировала не менее <strong>восьми инцидентов</strong> — сбои, деградацию, частичные отключения. Уже не редкость, а система: защита от перегрузки у таких сервисов одна — резать запросы, и защита эта каждый раз бьёт по пользователю. Самый крупный случился 15 октября: сервис лежал больше четырёх часов, вместе с потребительской версией падали API обеих флагманских моделей (данные 3DNews, первичного лога в открытом доступе нет).</p>
+    <p>Формально доступность инференса выглядит прилично: API DeepSeek Flash держал 99,56%, V4 Pro — 99,74%. Но каждый простой пришёлся на пик нагрузки, когда сервис нужнее всего, и мне как пользователю от 99,56% ни тепло ни холодно — важно, работает ли он в мой рабочий час.</p>
+    <p>Сбои объясняют, почему лимиты появились именно сейчас, но не объясняют, кто именно нагрузил серверы. Версий три, и дальше — разбор по канонам детектива: мотив, средство, возможность.</p>
+    <h2 class="article-h2" id="sec-tri-versii-kto-peregruzil-deepseek">Три версии: кто перегрузил DeepSeek</h2>
+    <p>Кто перегрузил DeepSeek — вопрос открытый. Версий три, от скучной до почти шпионской, и каждая объясняет свою часть картины.</p>
+    <h3>Версия 1. Агентная лавина</h3>
+    <p>У нейросети DeepSeek нагрузку создаёт не чат, а агент: один вопрос — сотни токенов, а ИИ-агент — десятки скрытых запросов, каждый со своим «размышлением». Модель думает вслух, и это дорого; автономные боты не спят и не уходят в отпуск.</p>
+    <p>Что видно точно: по итогу октября агентные ключи взяли 76% токенов OpenRouter — 600 из 790 трлн, год назад 8%. Алекс Аталла из OpenRouter оценивал агентные задачи в 88,6% за неделю до 5 октября: 132,6 трлн против 17 «человеческих». Отдельно — DeepSeek Harness: 1,54 млн активных в сутки и около 92 трлн токенов в сутки, это собственный контур компании, с рейтингом OpenRouter он не суммируется.</p>
+    <p>А теперь деталь, которая связывает лавину с тем утром: в памяти GPU висит KV-кэш — данные, сохраняющие контекст беседы. Человек ушёл, а свежий чат ещё часами занимает память стойки. Поэтому под нож пошли старые переписки и длина ввода: не произвол, а арифметика GPU.</p>
+    <figure>
+        <img src="img/023-04-deepseek-agentnaya-lavina.png" alt="агентная лавина и память GPU">
+        <figcaption>Один вопрос человека — сотни запросов агента. Боты не спят, а память стойки общая: это арифметика GPU.</figcaption>
+    </figure>
+    <h3>Версия 2. «Атака на вычисления»</h3>
+    <p>Прямых доказательств нет, но как гипотеза корпоративной войны она жизнеспособна: в отрасли для неё есть термины energy-latency и inference-cost атаки, они же sponge-примеры. Механика описана: Engorgio (ICLR 2025) раздувает ответ в 2–13 раз, ThinkTrap (NDSS 2026) уводит модель в бесконечное «размышление» на запросе в 20 токенов.</p>
+    <p>Логика тут нехитрая: если мощности на пределе, достаточно направить на бесплатный сегмент поток самых дорогих для GPU запросов — длинные PDF, глубокий вывод, многошаговые рассуждения. Цель не «положить» серверы, это слишком заметно, а хроническая деградация. Пользователь не думает «нас атакуют», он думает «нейросеть сыпется» и уходит. Ошибки квоты в этот момент выглядят как обычные баги.</p>
+    <p>Но есть контраргумент, и он, по-моему, сильный. В том самом январе, во время настоящих кибератак, стартап отреагировал точечно: ограничил регистрацию на пару дней, не трогая тех, кто уже внутри. Нынешняя реакция иная — лимиты, квоты и обрезка для легитимных бесплатных пользователей. Компания, которая умеет отличать атаку от перегрузки, повела себя ровно так, как ведут себя при перегрузке. Это не закрывает вопрос о «подталкивании», но заметно меняет его приоритет.</p>
+    <h3>Версия 3. Идеальный шторм</h3>
+    <p>Мой фаворит — третий сценарий, потому что он объединяет обе версии и не требует веры в теорию заговора.</p>
+    <ol>
+        <li>DeepSeek выпустил слишком эффективную и дешёвую модель и спровоцировал органический взрыв агентных запросов. Инфраструктура начала трещать.</li>
+        <li>Уязвимость стала очевидной для рынка. Недобросовестные игроки, боты-скрейперы и самодельные скрипты могли усилить нагрузку, зная, что система и так на пределе.</li>
+        <li>Компания была вынуждена ввести жёсткие лимиты, чтобы физически выжить. И это ударило по репутации бесплатного продукта.</li>
+    </ol>
+    <h2 class="article-h2" id="sec-cena-besplatnosti-komu-limity-isportili-">Цена бесплатности: кому лимиты испортили работу</h2>
+    <p>Цена бесплатных лимитов DeepSeek оказалась не в деньгах, а в человеческом времени — и это самая неприятная часть истории. Что происходит с продуктом, который перестаёт быть бесплатным, хотя денег за него так и не берут?</p>
+    <p>Для многих бесплатная нейросеть DeepSeek была, по сути, синонимом слова «бесплатно» — именно это уравнение и сломалось. Бесплатный DeepSeek образца июля и ноябрьский — теперь разные продукты. В ноябре бесплатный дипсик ведёт себя совсем не так, как в июле, и ирония в том, что навыки не спасают: дневная квота DeepSeek одинаковая для всех, кто не платит.</p>
+    <p>В сухом остатке — новая реальность для бесплатной модели DeepSeek, непривычная и неудобная. Урезанный ввод, чаты, которые обрываются, если их неделю не открывать, и квота, которая у многих тает за пару часов. Для тех, кто использует нейросеть для глубокого анализа, длинных проектов или обучения, это не мелкое неудобство: рушится сам способ работы, при котором контекст живёт в одном месте месяцами. По себе знаю: за месяц такой работы привыкаешь не к модели, а к тому, что она помнит.</p>
+    <p>Бесплатная модель DeepSeek держала и студентов, и экспериментаторов, и авторов контента — теперь этот фильтр работает иначе. Уходят студенты, экспериментаторы, авторы контента — те, кто гонял нейросеть для учёбы, программирования и черновиков и для кого длина контекста и время сессии критичны. Остаются те, кому хватает коротких вопросов, и те, кто готов платить.</p>
+    <p>Аудитория раскалывается на два лагеря: первые платят за API и переводят сервис в строку расходов, вторые готовят миграцию на локальные стенды или к другому провайдеру. Кто-то ушёл из-за лимитов DeepSeek и уже не вернётся — и это, если подумать, самый дорогой побочный эффект всей истории.</p>
+    <h2 class="article-h2" id="sec-epilog-tencent-prishel-cherez-den">Эпилог: Tencent пришёл через день</h2>
+    <p>И вот ирония, без которой история была бы слишком аккуратной: 16 ноября, когда пользователи считали знаки в сообщении, Tencent выпустил Hy4 flash — младшую модель семейства Hy4: 224 млрд параметров, из них 12 млрд активных, контекст до 1 млн токенов (960 тыс. на входе и 64 тыс. на выходе по данным агрегаторов), мультимодальный вход — тот же набор функций, что у брендового чата.</p>
+    <p>Цена — <strong>$0,070</strong> за миллион входных и <strong>$0,281</strong> за миллион выходных, кэш — $0,003. Со скидкой 50% до конца месяца это вдвое меньше. Против вне пиковых тарифов DeepSeek Flash ($0,15/$0,60) Hy4 дешевле вдвое, а со скидкой — вчетверо.</p>
+    <p>«В восемь раз дешевле задачи» — цифра из материалов Tencent, и она считается от пикового тарифа DeepSeek ($0,30/$1,20) со скидкой. Через два дня Tencent открыл веса: выложил библиотеку, которую можно поднять на своём железе за вечер. Если честно, это самое обидное место в истории.</p>
+    <p>Рынок ответил сразу. В дневном срезе OpenRouter на 19-е Hy4 flash вышла на первое место — 22,6 трлн токенов в сутки. По лидерборду недели 19–20-го — 69,3 против 62,2 у DeepSeek Flash за ту же незакрытую неделю: впервые за месяц первое место ушло от DeepSeek. Держится пока 30-дневная накопленная шкала — 227 против 69, — но это фора во времени: Hy4 живёт одну неделю, а DeepSeek копила месяц.</p>
+    <p>Тренд, как говорится, виден без микроскопа. Нейросеть DeepSeek Flash упёрлась в железо и заперла бесплатный доступ. Через день после лимитов DeepSeek китайский ИИ-конкурент выкатил модель вчетверо дешевле — с действующей скидкой — и выложил открытые веса.</p>
+    <p>Вот, собственно, и ответ на исходный вопрос. Успех стал ловушкой, потому что рынок мгновенно перетекает туда, где дешевле. А хакеры, как ни обидно авторам теории заговора, тут ни при чём.</p>
+    <h2 class="article-h2" id="sec-poka-deepseek-chinit-potolok">Пока DeepSeek чинит потолок</h2>
+    <p>Пока в поиске растут запросы про сбой дипсика, DeepSeek делает два хода, и оба пока не про тебя. Первый — железо: в Уланчабе, во Внутренней Монголии, строится дата-центр примерно на 1 ГВт и минимум 160 000 ИИ-чипов; частичный ввод — конец 2027-го или начало 2028 года. Лян Вэньфэн объясняет прямо: «нам мешает масштабироваться нехватка вычислений, а не нежелание». Деньги собраны — второй раунд около $15,8–15,9 млрд при оценке под $90 млрд, хотя компания это не подтверждала.</p>
+    <p>Второй ход — монетизация: лимиты DeepSeek API живут по своим правилам, а платного тарифа для обычных людей по-прежнему нет. В приложении всё то же уведомление, и ошибки квоты никуда не денутся.</p>
+    <h2 class="article-h2" id="sec-dnevnaya-kvota-deepseek-chto-delat-kogda">Дневная квота DeepSeek: что делать, когда deepseek не работает</h2>
+    <p>Дальше — практическая часть, для тех, чья хронология тоже упёрлась в чужую квоту. Сценарий у всех одинаковый: пользовался месяцами, а потом раз — несколько запросов, и стоп, лимит исчерпан. Как ни готовься, приятного мало, но именно такие моменты напоминают о старом принципе: не держи все яйца в одной корзине. Тут, как говорится, без вариантов: либо считаешь знаки, либо платишь.</p>
+    <figure>
+        <img src="img/023-05-deepseek-analogi-yayca.png" alt="яйца по корзинам">
+        <figcaption>План на случай квоты — шесть корзин вместо одной: ни один рабочий процесс не должен висеть на одной нейросети.</figcaption>
+    </figure>
+    <p>Ставить весь рабочий процесс на одну нейросеть и одного ИИ-агента в нынешние времена рискованно — это и есть та самая одна корзина. Лимиты DeepSeek теперь часть жизни бесплатной версии, и план ниже — о том, как разложить яйца по разным местам так, чтобы следующие ограничения не застали врасплох. Скажу за себя: привычка работать с нейросетью DeepSeek никуда не делась, но я выбрал второй и третий варианты и пока не пожалел.</p>
+    <ol>
+        <li>Если остаёшься на бесплатном тарифе. Смотри, показывает ли интерфейс время сброса: оно индивидуально для аккаунта. Если deepseek не работает второй день подряд — это уже не сбой, а дневной лимит, и ждать «пока починят» бессмысленно. Старый чат с заблокированным продолжением можно спасти вручную: сделай бэкап последних версий документов и ключевых инструкций и перенеси данные в новый диалог, помня, что новое окно не наследует старый контекст. <strong>Очистка кэша и перелогин квоту DeepSeek не возвращают.</strong></li>
+        <li>DeepSeek API. Здесь всё решает кошелёк, а не суточный лимит. Для агентных задач это самый предсказуемый вариант: платишь за токены DeepSeek Flash через API, а не за право войти в чат. Пара строк в конфиге и маленький скрипт с ключом — и Flash отвечает каждый раз одинаково.</li>
+        <li>Локальный стенд. Ollama — фреймворк, который тянет открытые веса и поднимает модель прямо на твоей машине, и инференс идёт локально: конфиденциальность и контроль, данные остаются у тебя, шифрование своё, а хостинг — твой собственный стол. Но железо теперь твоё, и оно стоит денег и греется, представь.</li>
+        <li>Другая облачная платформа. Смотри не только на «умность»: важна непрерывность контекста и хронологии между сессиями — без этого смысл переезда теряется. Подробнее про один из таких сервисов — <a href="https://vc.ru/id6054863/3158467-neysrest-qwen-universalnyy-instrument">Нейросеть Qwen в 2026: бесплатный универсал для работы с файлами, кодом и изображениями</a>.</li>
+        <li>Агрегаторы-роутеры. Гибко, но помни: это посредник между тобой и нейросетями, ещё один конфиг, ещё одни лимиты и доступ к твоим запросам.</li>
+        <li>Аналоги DeepSeek. Если выбираешь, на что уходить, сначала посмотри на две вещи — цену за задачу и политику лимитов, а бенчмарки потом. Нейросеть, которая сегодня дешевле, завтра может перекроить правила точно так же. Я, например, держу два сервиса, библиотеку промптов и локальную сборку — не из паранойи, а чтобы не повторять одно и то же по три раза. Разбор альтернатив с ценами и лимитами — <a href="https://vc.ru/id6054863/3152654-besplatnye-neirosseti-dlya-rabotyi">Бесплатные нейросети 2026: какую выбрать под свою задачу</a>.</li>
+    </ol>
+    <p>Я знаю, о чём говорю, — к сожалению. Мой собственный архив длинной хроники в эти дни переезжает на другой облачный сервис, с бэкапом, проверкой и без спешки, а локальный стенд готовится параллельно. Эмоций тут немного: обидно, конечно, но это обычное инженерное следствие чужого решения о квотах.</p>
+    <h2 class="article-h2" id="sec-chto-eto-znachit-dlya-rynka-i-dlya-tebya">Что это значит для рынка и для тебя</h2>
+    <p>Лимиты модели DeepSeek для бесплатных — не защита от хакеров, а попытка закрыть дверь, через которую в комнату хлынул слишком мощный поток. Вычисления стали новым ресурсом, и его нехватка теперь решает, кому доступен бесплатный чат. Серверы не масштабируются так же быстро, как растут запросы, — это ограничение физическое, а не бюрократическое.</p>
+    <p>И вот то самое ружьё из досье: в январе во время кибератак ответ был прицельным — два дня закрытой записи новичков и снова открыто, своих не тронули; в ноябре 2026-го нейросеть сжала контекст, обрезала старые чаты и ввела квоты для всех бесплатных пользователей сразу.</p>
+    <p>Первое — реакция на врага. Второе — реакция на вес собственного успеха.</p>
+    <p>Кит не стал жертвой хакеров. Он дал рынку инструмент, который рынок научился выжимать до последнего ватта.</p>
+    <p>А уровень воды в том аквариуме никто так и не поднял.</p>
+    <p>А вы что думаете: лимиты DeepSeek — это временная мера или новая норма для бесплатных нейросетей? Делитесь в комментариях.</p>
+    <h3>📚 Читайте также: нейросети и ИИ</h3>
+    <p class="cat"><a href="https://vc.ru/id6054863/3158467-neysrest-qwen-universalnyy-instrument">Нейросеть Qwen в 2026: бесплатный универсал для работы с файлами, кодом и изображениями</a></p>
+    <p class="cat"><a href="https://vc.ru/id6054863/3152654-besplatnye-neirosseti-dlya-rabotyi">Бесплатные нейросети 2026: какую выбрать под свою задачу</a></p>
+    <p class="cat"><a href="https://vc.ru/id6054863/3129621-deepseek-multitool-openclaw-autoclaw-ii-agenty">Бесплатные нейросети и ИИ-агенты для работы: честный разбор DeepSeek, MultiTool, OpenClaw и AutoClaw</a></p>
+    <p class="cat"><a href="https://vc.ru/id6054863/3074911-problemy-i-uroki-rabotyi-s-ii-v-razrabotke">Чему ИИ нас учит</a></p>
+    <div class="article-tags"><span>#DeepSeek</span><span>#нейросети</span><span>#ИИ</span><span>#лимиты</span><span>#API</span></div>
+    <p>DeepSeek, нейросети, ИИ, лимиты, API, OpenRouter, DeepSeek Flash</p>
+        </article>
+<aside class="sb sb-right" aria-label="Оглавление статьи">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-utro-kogda-deepseek-vklyuchil-limit">Утро, когда DeepSeek включил лимит</a>
+        <a href="#sec-pochemu-deepseek-eto-sdelal-konchilas-mo">Почему DeepSeek это сделал: кончилась мощность</a>
+        <a href="#sec-limity-deepseek-dlya-besplatnyh-chto-ime">Лимиты DeepSeek для бесплатных: что именно ограничили</a>
+        <a href="#sec-dose-kompaniya-kotoraya-obrushila-uoll-s">Досье: компания, которая обрушила Уолл-стрит</a>
+        <a href="#sec-hronologiya-nagruzki-kak-deepseek-vyros-">Хронология нагрузки: как DeepSeek вырос в восемь раз</a>
+        <a href="#sec-sboi-deepseek-chto-treschalo-po-shvam">Сбои DeepSeek: что трещало по швам</a>
+        <a href="#sec-tri-versii-kto-peregruzil-deepseek">Три версии: кто перегрузил DeepSeek</a>
+        <a href="#sec-cena-besplatnosti-komu-limity-isportili-">Цена бесплатности: кому лимиты испортили работу</a>
+        <a href="#sec-epilog-tencent-prishel-cherez-den">Эпилог: Tencent пришёл через день</a>
+        <a href="#sec-poka-deepseek-chinit-potolok">Пока DeepSeek чинит потолок</a>
+        <a href="#sec-dnevnaya-kvota-deepseek-chto-delat-kogda">Дневная квота DeepSeek: что делать, когда deepseek не работает</a>
+        <a href="#sec-chto-eto-znachit-dlya-rynka-i-dlya-tebya">Что это значит для рынка и для тебя</a>
+    </div>
+</aside>
+<button class="toc-toggle" aria-expanded="false" aria-controls="tocPanel" title="Содержание статьи">☰</button>
+<div class="toc-panel" id="tocPanel" role="navigation" aria-label="Содержание статьи (мобильное)">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-utro-kogda-deepseek-vklyuchil-limit">Утро, когда DeepSeek включил лимит</a>
+        <a href="#sec-pochemu-deepseek-eto-sdelal-konchilas-mo">Почему DeepSeek это сделал: кончилась мощность</a>
+        <a href="#sec-limity-deepseek-dlya-besplatnyh-chto-ime">Лимиты DeepSeek для бесплатных: что именно ограничили</a>
+        <a href="#sec-dose-kompaniya-kotoraya-obrushila-uoll-s">Досье: компания, которая обрушила Уолл-стрит</a>
+        <a href="#sec-hronologiya-nagruzki-kak-deepseek-vyros-">Хронология нагрузки: как DeepSeek вырос в восемь раз</a>
+        <a href="#sec-sboi-deepseek-chto-treschalo-po-shvam">Сбои DeepSeek: что трещало по швам</a>
+        <a href="#sec-tri-versii-kto-peregruzil-deepseek">Три версии: кто перегрузил DeepSeek</a>
+        <a href="#sec-cena-besplatnosti-komu-limity-isportili-">Цена бесплатности: кому лимиты испортили работу</a>
+        <a href="#sec-epilog-tencent-prishel-cherez-den">Эпилог: Tencent пришёл через день</a>
+        <a href="#sec-poka-deepseek-chinit-potolok">Пока DeepSeek чинит потолок</a>
+        <a href="#sec-dnevnaya-kvota-deepseek-chto-delat-kogda">Дневная квота DeepSeek: что делать, когда deepseek не работает</a>
+        <a href="#sec-chto-eto-znachit-dlya-rynka-i-dlya-tebya">Что это значит для рынка и для тебя</a>
+    </div>
+</div>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2 class="article-h2">Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="../../index.html#proekty">Проекты</a>
+            <a href="../../index.html#stati">Статьи</a>
+            <a href="../../index.html#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+<script>
+(function(){
+  var tt=document.querySelector('.toc-toggle'), tp=document.getElementById('tocPanel');
+  if(!tt||!tp) return;
+  tt.addEventListener('click',function(){ var o=tp.classList.toggle('open'); tt.setAttribute('aria-expanded', o?'true':'false'); });
+  tp.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='A'){ tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); } });
+  document.addEventListener('click',function(e){ if(!tp.classList.contains('open')) return; if(tp.contains(e.target)||tt.contains(e.target)) return; tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); });
+})();
+</script>
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['mono', 'term', 'paper', 'ice', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+    // Плавающая кнопка-бургер «Содержание»
+    var tocToggle = document.querySelector('.toc-toggle');
+    var tocPanel = document.getElementById('tocPanel');
+    if (tocToggle && tocPanel) {
+        tocToggle.addEventListener('click', function () {
+            var open = tocPanel.classList.toggle('open');
+            tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        tocPanel.addEventListener('click', function (e) {
+            if (e.target && e.target.tagName === 'A') {
+                tocPanel.classList.remove('open');
+                tocToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (!tocPanel.classList.contains('open')) { return; }
+            if (tocPanel.contains(e.target) || (tocToggle && tocToggle.contains(e.target))) { return; }
+            tocPanel.classList.remove('open');
+            tocToggle.setAttribute('aria-expanded', 'false');
+        });
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
