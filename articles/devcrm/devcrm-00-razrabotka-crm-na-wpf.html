@@ -339,7 +339,7 @@
 
     <p>С этим внутренним противником я и пошёл в бой.</p>
 
-    <h2 id="sec-1">Почему я выбирал локальную CRM, а не веб</h2>
+    <h2 id="sec-lokalnaya-crm">Почему я выбирал локальную CRM, а не веб</h2>
 
     <p>Три года назад я верил, что серьёзная программа обязана жить в браузере. Все так говорили. Серверы, базы, деплои. Я поднимал всё это, настраивал, тратил вечера. И каждый раз ловил одно и то же ощущение.</p>
 
@@ -353,7 +353,7 @@
 
     <p>И я выбрал разработку WPF-приложения CRM — надёжном фреймворке от Microsoft для Windows-приложений на .NET. Мне не нужны были микросервисы и слои абстракции, которые существуют, чтобы было о чём поговорить. Мне нужна была кнопка, которая отвечает на F5. Итоговый стек простой: .NET 8, WPF, библиотека Microsoft.Data.Sqlite — слой доступа к данным, данные лежат в одном файле рядом с exe.</p>
 
-    <h2 id="sec-2">MVVM в моей CRM, или как я перестал тонуть</h2>
+    <h2 id="sec-mvvm">MVVM в моей CRM, или как я перестал тонуть</h2>
 
     <p>Сначала я писал как все. Так обычно и начинается программирование на WPF: код на WPF начинается прямо в code-behind, в файле MainWindow.xaml.cs. Работало, пока кода было строчек сто. Я нажимал F5, окно открывалось, всё кликалось. И я решил, что дело сделано.</p>
 
@@ -374,7 +374,7 @@
         <figcaption>Архитектура CRM на WPF: Models, Repositories, Services, ViewModels, Views.</figcaption>
     </figure>
 
-    <h2 id="sec-3">Первая модель в CRM, или с чего начать</h2>
+    <h2 id="sec-model">Первая модель в CRM, или с чего начать</h2>
 
     <p>Когда скелет был готов, я замер по другой причине. Страх подкатил: я стоял перед пустой папкой Models и не понимал, с чего начать. Что писать первым? Если ошибусь, опять утону в хаосе, и все усилия насмарку.</p>
 
@@ -398,7 +398,7 @@
 
     <p>Потом добавились и остальные сущности. Каждая появлялась по необходимости. Нужно привязать контакт к менеджеру — появился AssignedUserId. Нужны заметки — появилась модель Note. Так код рос из жизни, а не из схемы. И это, пожалуй, самый правильный способ не утонуть.</p>
 
-    <h2 id="sec-4">SQLite для моей CRM, или как я чуть не похоронил всё</h2>
+    <h2 id="sec-sqlite">SQLite для моей CRM, или как я чуть не похоронил всё</h2>
 
     <p>Был момент, когда я едва не уничтожил проект на старте. Я начитался про PostgreSQL, развернул её на машине, настроил. Гордый, сел открывать программу и упёрся в стену.</p>
 
@@ -410,7 +410,7 @@
 
     <p>Для офлайн-работы такого десктопного приложения на одном компьютере этого хватает с головой. А если когда-нибудь понадобится сервер, переберусь на Entity Framework Core: он сменит провайдер, переиспользует ту же модель, а данные переедут отдельным шагом с бэкапом.</p>
 
-    <h2 id="sec-5">Интерфейс моей CRM, или момент, ради которого всё затевалось</h2>
+    <h2 id="sec-interfeys">Интерфейс моей CRM, или момент, ради которого всё затевалось</h2>
 
     <p>База заработала. Я дошёл до самого приятного — до интерфейса приложения CRM и дизайна окна. Взял стандартный DataGrid в окне WPF, настроил привязку данных к таблице, добавил три кнопки — добавления, сохранения и удаления. Всё через команды: кнопка ничего не знает о логике, она вызывает команду вьюмодели.</p>
 
@@ -431,7 +431,7 @@
 
     <p>И я понял, почему так долго не возвращался. Я боялся не кода. Я боялся, что не смогу. А оказалось — смог. И этот вечер я теперь вспоминаю каждый раз, когда что-то идёт не так. Он напоминает: <strong>противник, которого я победил, был не снаружи</strong>.</p>
 
-    <h2 id="sec-6">Обо что я спотыкался по пути в CRM</h2>
+    <h2 id="sec-spotykalsya">Обо что я спотыкался по пути в CRM</h2>
 
     <p>Не буду приукрашивать: гладко не было от слова совсем. Были баги и вещи, которые выжимали сил не меньше, чем тот вечер с дорогой. Вот три из них.</p>
 
@@ -446,7 +446,7 @@
         <figcaption>Молчаливые биндинги, обо что спотыкается каждый WPF-разработчик в CRM на WPF.</figcaption>
     </figure>
 
-    <h2 id="sec-7">Итог: как я собрал свою CRM</h2>
+    <h2 id="sec-itog">Итог: как я собрал свою CRM</h2>
 
     <p>За несколько вечеров я собрал рабочий прототип WPF-приложения. Не релиз в продакшн, а фундамент, с которого проект CRM и начинается. Но главное не в этом.</p>
 
@@ -474,7 +474,7 @@
         <li>хочется готовое решение из коробки, без погружения в устройство CRM.</li>
     </ul>
 
-    <h2 id="sec-8">Частые вопросы</h2>
+    <h2 id="sec-faq">Частые вопросы</h2>
 
     <p><strong>Сколько времени заняла разработка прототипа?</strong></p>
 
@@ -502,27 +502,45 @@
 
     <h2 id="chitat">Читайте также в цикле DevCrm (CRM на WPF)</h2>
     <ul class="article-links">
-    <li><a href="https://dzen.ru/a/anRfmkhhqGTKIS58">DevCrm 01 - Работа с клиентами: почему они не редактируются в CRM</a></li>
-    <li><a href="https://dzen.ru/a/anXHmv6noirlOJ2X">DevCrm 02 - Архитектура и слои приложения для CRM на WPF</a></li>
-    <li><a href="https://dzen.ru/a/annKjLdx9jSTgZT9">DevCrm 03 - Корзина, восстановление и мягкое удаление в CRM</a></li>
-    <li><a href="https://dzen.ru/a/annVZvRCzyr72OBY">DevCrm 04 - Пользователи и роли, управление доступом в CRM</a></li>
-    <li><a href="https://dzen.ru/a/aoHu_l6qwRzpLKaE">DevCrm 05 - Стилизация интерфейса CRM: как избавиться от «кандовенько»</a></li>
-    <li><a href="https://dzen.ru/a/ao74MYixxn9bUqgD">DevCrm 06 - Верхняя панель в CRM: выносим её в UserControl</a></li>
-    <li><a href="https://dzen.ru/a/apSduIzHmR9CQXEe">DevCrm 07 - Чат в CRM: нужен ли он вообще?</a></li>
-    <li><a href="https://dzen.ru/a/ar5PRaK0FzXe0UGn">DevCrm 08 - Когда MainViewModel в CRM стал 1300+ строк</a></li>
-    <li><a href="https://dzen.ru/a/ar-bGFj1Kl5syGIH">DevCrm 09 - Единая система стилей CRM на WPF: организация ResourceDictionary</a></li>
-    <li><a href="https://dzen.ru/a/asY5NowiwnKCUvpz">DevCrm 10 - Как поставить точку в разработке своей CRM</a></li>
+    <li><a href="devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html">DevCrm 01 - Работа с клиентами: почему они не редактируются в CRM</a></li>
+    <li><a href="devcrm-02-arhitektura-sloev-crm-na-wpf.html">DevCrm 02 - Архитектура и слои приложения для CRM на WPF</a></li>
+    <li><a href="devcrm-03-korzina-myagkoe-udalenie-crm.html">DevCrm 03 - Корзина, восстановление и мягкое удаление в CRM</a></li>
+    <li>DevCrm 04 - Пользователи и роли, управление доступом в CRM</li>
+    <li>DevCrm 05 - Стилизация интерфейса CRM: как избавиться от «кандовенько»</li>
+    <li>DevCrm 06 - Верхняя панель в CRM: выносим её в UserControl</li>
+    <li>DevCrm 07 - Чат в CRM: нужен ли он вообще?</li>
+    <li>DevCrm 08 - Когда MainViewModel в CRM стал 1300+ строк</li>
+    <li>DevCrm 09 - Единая система стилей CRM на WPF: организация ResourceDictionary</li>
+    <li>DevCrm 10 - Как поставить точку в разработке своей CRM</li>
     </ul>
     <h2 id="smezh">Смежные циклы: нейросети и ИИ-агенты</h2>
     <ul class="article-links">
-    <li><a href="https://dzen.ru/a/awGokmLzbVc2SGm-">Лимиты DeepSeek 2026: что ограничили и что делать</a></li>
-    <li><a href="https://dzen.ru/a/arYgKStriARRQ0VM">Нейросеть Qwen в 2026</a></li>
-    <li><a href="https://dzen.ru/a/arJoN36vzEESb6gE">Бесплатные нейросети 2026</a></li>
-    <li><a href="https://dzen.ru/a/aqJ0-YSH0GP2JRAh">DeepSeek, MultiTool, OpenClaw, AutoClaw</a></li>
-    <li><a href="https://dzen.ru/a/anxKhU8Fvy70rGeW">Чему ИИ нас учит</a></li>
-    <li><a href="https://dzen.ru/a/at9devjt_DG78krQ">Андроид закрывается: как Google ограничивает установку apk</a></li>
+    <li><a href="../ii-kak-katalizator/deepseek-limity.html">Лимиты DeepSeek 2026: что ограничили и что делать</a></li>
+    <li>Нейросеть Qwen в 2026</li>
+    <li>Бесплатные нейросети 2026</li>
+    <li>DeepSeek, MultiTool, OpenClaw, AutoClaw</li>
+    <li>Чему ИИ нас учит</li>
+    <li>Андроид закрывается: как Google ограничивает установку apk</li>
     </ul>
 
+
+    <div class="article-tags">
+        <span>#DevCrm</span>
+        <span>#WPF</span>
+        <span>#CSharp</span>
+        <span>#CRM</span>
+        <span>#MVVM</span>
+        <span>#SQLite</span>
+    </div>
+
+    <nav class="article-nav" aria-label="Навигация по циклу">
+        <a class="article-nav-link article-nav-next" href="devcrm-01-dannye-ne-redaktiruyutsya-v-crm.html">
+            <span class="article-nav-label">
+                <span class="article-nav-title">01 · Работа с клиентами: почему они не редактируются</span>
+            </span>
+            <span class="article-nav-arrow">→</span>
+        </a>
+    </nav>
 </article>
         <aside class="sb sb-right" aria-label="Оглавление статьи">
             <h3>Содержание статьи</h3>
