@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нейросеть Z.ai на Android: свой клиент за 15 редакций и GLM 5.4 — Archeon Zero</title>
+    <meta name="description" content="Приложение Z.ai падало на кнопке «приложить файл» — я собрал свой Android-клиент на WebView за пятнадцать редакций, выложил APK и застал выход GLM 5.4.">
+    <meta name="keywords" content="z.ai, нейросеть z.ai, приложение z.ai на андроид, apk, установить apk, glm 5.4, chat.z.ai, бесплатная нейросеть, webview">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Archeon Zero">
+    <meta property="og:title" content="Нейросеть Z.ai на Android: свой клиент за 15 редакций и GLM 5.4">
+    <meta property="og:description" content="Приложение Z.ai падало на кнопке «приложить файл» — я собрал свой Android-клиент на WebView за пятнадцать редакций, выложил APK и застал выход GLM 5.4.">
+    <meta property="og:image" content="img/024-01-besplatnoe-prilozhenie-zai-android-klient-glavnyy-ekran.PNG">
+    <meta property="article:section" content="Нейросети">
+    <meta property="article:tag" content="Z.ai, нейросети, Android, APK, GLM 5.4">
+    <style>
+        /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
+        .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
+        .article-topline { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; color: inherit; opacity: .75; margin-bottom: 8px; }
+        .article-h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+        .article-lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 0; }
+        .article-hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+        .article-h2 { font-family: Georgia, serif; font-size: 26px; line-height: 1.25; margin: 40px 0 14px; }
+        .article p { font-size: 17px; line-height: 1.75; color: var(--ink); }
+        .article-lyrics { font-family: Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-soft); margin: 8px 0; }
+        .article-lyrics-attrib { margin-top: 6px; color: var(--muted); font-size: 14px; font-style: normal; }
+        .article figure { margin: 32px 0; }
+        .article figure img { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+        .article figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; font-style: italic; }
+        .article pre { background: var(--deep); color: #dce6f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 14.5px; line-height: 1.5; }
+        .article-kinds { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0; }
+        .article-kinds strong { display: block; margin-bottom: 6px; }
+        .faq-q { font-weight: 700; margin-top: 22px; }
+        .article-tags { margin: 12px 0; }
+        .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        .article-nav { display: flex; gap: 12px; margin: 34px 0 8px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .article-nav-link { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-decoration: none;
+                            background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+                            transition: border-color .18s, background .18s; }
+        .article-nav-link:hover { border-color: var(--accent); background: var(--surface-2); }
+        .article-nav-next { justify-content: flex-end; text-align: right; }
+        .article-nav-arrow { font-size: 20px; color: var(--accent); line-height: 1; }
+        .article-nav-title { font-size: 13.5px; line-height: 1.4; color: var(--ink-soft); display: block; }
+        /* Две зоны-сайдбара (фикс. при скролле, как глава книги):
+           слева — статьи цикла DevCrm; справа — оглавление статьи. Контент — по центру. */
+        .layout { display: flex; gap: 28px; align-items: flex-start; max-width: 1260px; margin: 0 auto; padding: 0 24px; }
+        .layout article { flex: 1 1 auto; max-width: 760px; margin: 0; min-width: 0; order: 2; }
+        .sb { width: 270px; flex: 0 0 270px; position: sticky; top: 24px; align-self: flex-start;
+              max-height: calc(100vh - 48px); overflow-y: auto; padding: 20px 18px;
+              background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+              font-size: 13.5px; line-height: 1.45; }
+        .sb-left { order: 1; }
+        .sb-right { order: 3; }
+        .sb h3 { font-family: Georgia, serif; font-size: 12px; margin: 14px 0 8px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--muted); }
+        .sb h3:first-child { margin-top: 0; }
+        .sb a { display: block; padding: 3px 0; text-decoration: none; color: var(--ink-soft); }
+        .sb a:hover { color: var(--accent); }
+        .sb a.sb-active { color: var(--accent); font-weight: 700; }
+        .sb .toc { counter-reset: toc; }
+        .sb .toc a::before { counter-increment: toc; content: counter(toc) ". "; color: var(--muted); }
+        @media (max-width: 1100px) {
+            .sb-right { display: none; }
+
+        }
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; padding: 0 16px; }
+            .layout article { max-width: 100%; }
+            .sb { width: 100%; flex: 1 1 auto; position: static; max-height: none; order: -1; }
+        }
+        /* Плавающая кнопка-бургер для оглавления (появляется вместо скрытого сайдбара на узких экранах) */
+        .toc-toggle { display: none; position: fixed; top: 14px; right: 14px; z-index: 1000;
+                      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+                      background: var(--surface); color: var(--ink); cursor: pointer;
+                      align-items: center; justify-content: center; font-size: 18px;
+                      box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: background .18s, border-color .18s; }
+        .toc-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+        .toc-panel { display: none; position: fixed; top: 66px; right: 14px; z-index: 1000;
+                     width: 240px; max-height: calc(100vh - 90px); overflow-y: auto;
+                     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                     padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+        .toc-panel.open { display: block; }
+        .toc-panel h3 { font-family: Georgia, serif; font-size: 12px; margin: 0 0 8px; letter-spacing: .08em;
+                        text-transform: uppercase; color: var(--muted); }
+        .toc-panel a { display: block; padding: 4px 0; text-decoration: none; color: var(--ink-soft); font-size: 13.5px; line-height: 1.4; }
+        .toc-panel a:hover { color: var(--accent); }
+        @media (max-width: 1100px) { .toc-toggle { display: flex; } }
+    </style>
+    <link rel="stylesheet" href="../../themes.css">
+    <style>
+        /* fallback-палитра, если themes.css недоступен локально */
+        :root { --paper:#f6f4ee; --surface:#fffdf8; --surface-2:#f1ede3; --ink:#171a1f; --ink-soft:#33383f;
+                --muted:#6b7078; --line:#e3ded3; --accent:#c2410c; --deep:#121a24;
+                --logo-stem:#171a1f; --logo-c1:#c2410c; --logo-c2:#b45309; --logo-c3:#6b7078; }
+    </style></head>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+        <button data-theme-btn="mono">классика</button>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="ice">лёд</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../../index.html">Главная</a>
+            <a class="nav-link" href="../../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../../index.html#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+<main class="site-main" id="main">
+    <div class="container layout">
+<aside class="sb sb-left" aria-label="Разделы сайта и цикл об ИИ">
+    <h3>Разделы сайта</h3>
+    <a href="../../index.html">Главная</a>
+    <a href="../../index.html#proekty">Проекты</a>
+    <a href="../../index.html#stati">Статьи</a>
+    <a href="../../index.html#ploshadki">Площадки</a>
+    <a href="../../index.html#kontakty">Контакты</a>
+        <h3>Цикл об ИИ и нейросетях</h3>
+    <a href="https://archeonzero.ru/articles/ii-kak-katalizator/deepseek-limity.html">Лимиты DeepSeek: что ограничили</a>
+    <a class="sb-active" href="zai-chat-glm-5-4.html">Клиент Z.ai и GLM 5.4</a>
+    <a href="https://teletype.in/@archeonzero/tzRy6yAz0FA" target="_blank">Нейросеть Qwen в 2026</a>
+    <a href="https://teletype.in/@archeonzero/TKkJXqqqwgD" target="_blank">Бесплатные нейросети 2026: какую выбрать</a>
+    <a href="https://teletype.in/@archeonzero/QPNcxhS3Hdh" target="_blank">Бесплатные нейросети и ИИ-агенты</a>
+    <a href="https://teletype.in/@archeonzero/H-Vh-ax7obe" target="_blank">Чему ИИ нас учит</a>
+</aside>
+        <article class="article">
+    <div class="article-topline">ИИ как катализатор · № 024 · Z.ai / GLM</div>
+    <h1 class="article-h1">Официальный APK бесплатной нейросети Z.ai падал на вложениях и в итоге я поднял свой форк, а тут и GLM 5.4</h1>
+    <figure>
+        <img src="img/024-01-besplatnoe-prilozhenie-zai-android-klient-glavnyy-ekran.PNG" alt="Бесплатное приложение Z.ai на Android: экран смартфона с клиентом AZ chat и списком чатов нейросети Z.ai.">
+        <figcaption>Бесплатное приложение AZ chat на Android: список чатов Z.ai на главном экране — то, ради чего пришлось переделывать чужую обёртку.</figcaption>
+    </figure>
+    <p>Ну неужели такая компания как Z.ai не может сделать нормальное бесплатное приложение для чата, которое не вылетает на вложениях? Думал я недели две-три назад, после того как официальный APK Z.ai выбросил меня на кнопке «приложить файл». А бесплатная нейросеть Z.ai без своего приложения это вечная вкладка в браузере телефона, и она напрягает. Начал искать самоделки! Нашёёёл! А нет, ну да, нашел, но кто-то додумался кнопку домой посадить прям на кнопку отправить. Опять ищу. Нашёёёл — вообще фигня какая-то. Итак раза три. Плюнул. Надо делать своё, ну почти своё, глянем репо. Отлично, репо на месте. Так началась эпопея «переделать пару строк в коде, чтобы функция скачивания в APK работала нормально»!</p>
+    <h2 class="article-h2" id="sec-para-strok-aga">Пара строк, ага</h2>
+    <p>Пару строк. Потом посчитал: пятнадцать редакций, в каждой от пары до шести правок. У исходного автора MainActivity.kt — 422 строки: Kotlin, стек Android и и без лишних слоёв. У меня 1458, плюс отдельный класс на 44 строки только ради прокрутки. Так что <em>«пара строк»</em> обернулась долгим марафоном, и каждая правка приложения Z.ai давалась всё тяжелее.</p>
+    <p>Но сначала честно пытался жить с чужими сборками: перебрал три штуки, и каждая сборка APK приложения ломалась по-своему. Первая падала на прикреплении файла: молча, без ошибки, закрылась и всё. Вторая не давала нажать «Отправить», потому что кнопка «Домой» сидела ровно поверх неё. Третья открывалась, но половину интерфейса резала так, что до поля ввода доходил не каждый палец.</p>
+    <p>И вот сидишь такой, смотришь на этот интерфейс и думаешь: либо я слишком многого хочу, либо сделать нормально не так уж сложно.</p>
+    <h2 class="article-h2" id="sec-pochemu-obertka-a-ne-svoe-s-nulya">Почему обёртка, а не своё с нуля</h2>
+    <p>Писать клиент с нуля к сервису, у которого нет публичного API и открытых исходников, это как строить дом без фундамента, но с красивой крышей. Нельзя.</p>
+    <p>Это не программирование с нуля: <strong>честный путь только такой: взять веб-версию Z.ai и завернуть в WebView</strong>, чтобы приложение чат бесплатной нейросети Z.ai работало как обычная программа, а не вкладка в браузере. Свои жесты, свои кнопки, нормальный выбор файла, нормальное скачивание: под капотом Android-фреймворк, и приложение на андроид получает нативные диалоги. Внутри всё равно сайт, но снаружи уже приложение: чат открывается как обычно. Причём это не болталка, а ИИ-агент: он держит длинные сессии, сам запускает инструменты, гоняет файлы туда-сюда. Обёртка приложения должна всё это переживать, а не мешать.</p>
+    <p>Вопрос только в том, как из веб-версии сделать приложение так, чтобы человек не чувствовал подвоха. Спойлер: чувствует, но привыкает.</p>
+    <h2 class="article-h2" id="sec-repo-nashlos-i-srazu-s-syurprizom">Репо нашлось, и сразу с сюрпризом</h2>
+    <p>На GitHub лежит <a href="https://github.com/SHSLabs/Zai-app">исходная обёртка SHSLabs/Zai-app</a>, файл APK бесплатного приложения собирается локально, лицензия MIT, исходники открыты, маленькая обёртка под chat.z.ai — фактически паттерн WebView-клиента, то есть под бесплатное приложение чата Z.ai. Каркас есть, тема есть, сборка собирается — начинать можно с середины.</p>
+    <p>Нюанс в каркасе нашёлся мгновенно: кнопка «Домой» висела прямо над «Отправить», хочешь отправить сообщение, а тебя уносит на главную.</p>
+    <figure>
+        <img src="img/024-02-besplatnoe-prilozhenie-zai-android-kod-422-protiv-1458.PNG" alt="Бесплатное приложение Z.ai: два окна редактора кода рядом — исходный MainActivity.kt на 422 строки и форк на 1458 строк.">
+        <figcaption>MainActivity.kt автора — 422 строки; мой форк бесплатного приложения — 1458 плюс отдельный класс на 44 строки ради прокрутки.</figcaption>
+    </figure>
+    <h2 class="article-h2" id="sec-redakciya-za-redakciey">Редакция за редакцией</h2>
+    <p>Версии между делом меняли номера, тут опущу: история читается и без таблицы релизов и логов ошибок. До первой редакции было ещё «собрался с третьего раза»: Gradle и я не сразу нашли общий язык: сборка APK в Gradle падала на ровном месте. У каждой правки дальше был свой «зачем», без него это перестановка кнопок ради перестановки.</p>
+    <p><strong>Редакция первая. Кнопка «Домой».</strong> Жму «Отправить», а меня уносит на главную. Первым делом я кнопку убрал вообще. Прожил без неё день, понял: из глубокого чата выбираться неудобно, и вернул, но наверх. В разметке это выглядело так. Было:</p>
+    <pre><code class="language-xml">app:fabSize="normal"
+app:layout_constraintBottom_toBottomOf="parent"</code></pre>
+    <p>стало:</p>
+    <pre><code class="language-xml">android:layout_marginTop="80dp"
+app:fabSize="mini"
+app:layout_constraintTop_toTopOf="parent"</code></pre>
+    <p>Заодно сменил смысл: у автора тап по кнопке уходил назад по истории, у меня всегда возвращает на chat.z.ai. Запутались на китайской версии сайта или залез в глубь истории — тап, и ты дома.</p>
+    <p><strong>Редакция вторая. Вход через Google.</strong> Без него половина пользователей не войдёт, а вторая половина будет вводить пароль в странную форму. Жму «Sign in with Google» и ничего не происходит: WebView на жизненном цикле активности молча проглатывал window.open, процесс даже не начинался. Чинится двумя строками:</p>
+    <pre><code class="language-kotlin">setSupportMultipleWindows(true)
+javaScriptCanOpenWindowsAutomatically = true</code></pre>
+    <p>Вторая ловушка ждала в User-Agent: Google видел приписку ZAIWrapper/1.0, не узнавал свой браузер и уводил на веб-форму ввода пароля. Подменил на хромовский — открылся нормальный flow с системным селектором аккаунтов. Дальше городил popup-WebView с общими cookies: без общей банки сессия после входа не возвращалась в основное окно. Пароль Google всё равно просит, но это уже его правила, не мои.</p>
+    <p><strong>Редакция третья. Внешние ссылки.</strong> Тапнул в чате Z.ai на внешнюю ссылку, страница открылась внутри приложения, и выхода нет: приложение превращалось в браузер внутри браузера. У автора это было фичей, все ссылки держать внутри. Мне досталось как ловушка. Теперь всё, что не домен z.ai и не авторизация Google, уходит в системный браузер. Проверка хоста честная:</p>
+    <pre><code class="language-kotlin">host == "z.ai" || host.endsWith(".z.ai")</code></pre>
+    <p>Сравнение по подстроке здесь нельзя: пропустило бы сайт вида evilz.ai.</p>
+    <p><strong>Редакция четвёртая. Прокрутка.</strong> Листаю историю чата, а страница внезапно перезагружается. Задолбался. Виновник нашёлся в строчке у автора:</p>
+    <pre><code class="language-kotlin">swipeRefresh.setOnRefreshListener { webView.reload() }</code></pre>
+    <p>Стандартный <em>pull-to-refresh</em> не понимал, что внутри одностраничного сайта своя прокрутка: сам WebView стоит на нуле, а листается внутренний контейнер, и любой свайп вниз читался как запрос на обновление. Связал их через мост: страница докладывает позицию контейнера, обновление разрешено, только когда прокрутка меньше пяти пикселей. Вылилось в отдельный класс на 44 строки, ZaiSwipeRefresh, и в JS-мост ZaiScrollBridge.</p>
+    <p><strong>Редакция пятая. Загрузки.</strong> Файлы терялись молча, а это хуже любой ошибки: не знаешь, что потерял. В исходнике скачивания не было вовсе, ни DownloadManager, ни упоминания blob. Собрал три пути: обычные ссылки через системный DownloadManager и библиотеку загрузок, blob: через JS-мост в base64, data: прямой записью. Всё складывается в «Downloads», на Android 10 и выше без лишних разрешений.</p>
+    <p>С blob: вышла отдельная война. Страница отзывает ссылку сразу после клика, мой первый код делал запрос уже после отзыва и ловил TypeError: Failed to fetch. Теперь собственная ссылка на Blob хранится в памяти страницы, и чтение идёт напрямую. Диспетчер получился на четыре ветки:</p>
+    <pre><code class="language-kotlin">when {
+    url.startsWith("blob:") -&gt; saveBlobViaJs(url, ...)
+    url.startsWith("data:") -&gt; saveDataUri(url)
+    url.startsWith("http") -&gt; enqueueHttpDownload(url, ...)
+    else -&gt; startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}</code></pre>
+    <p>Cookie, User-Agent и данные сессии едут вместе с запросом обязательно: без них сервер отдаёт ошибку авторизации вместо файла. Тут впервые собралось всё целиком, и я выдохнул.</p>
+    <p><strong>Редакция шестая. Иконки и мелочёвка.</strong> Иконки переделывал дважды: сначала вернул исходные, потом сделал тонкие. На светлой теме старые выглядели кляксами. Ещё splash-экран, тонкий прогресс-бар загрузки и своё имя вместо авторского.</p>
+    <p><strong>Редакция седьмая. Вложения заваливают.</strong> Открыл приложение, зашёл в чат и меня завалило вложениями: панель вложений распахивается сама, на полэкрана. Пару раз нажал штук по сорок на крестик закрыть и полез искать, где это всё дело лежит. Запретить панель на корню нельзя: тогда перестанут открываться превью, которые человек открыл сам. Выход двухступенчатый: то, что сервис распахнул при входе в чат, закрывается молча; код сначала ищет у панели крестик и жмёт программно, а крестика нет — панель прячется вместе с подложкой.</p>
+    <figure>
+        <img src="img/024-03-besplatnoe-prilozhenie-zai-panel-vlozheniy.PNG" alt="Скриншот бесплатного приложения AZ chat: панель вложений с файлами сессии открыта поверх чата.">
+        <figcaption>Панель вложений в бесплатном приложении AZ chat: файлы сессии лежат поверх чата и закрывают пол-экрана, закрывать их приходится вручную.</figcaption>
+    </figure>
+    <p><strong>Редакция восьмая. Само открылось или сам открыл.</strong> Две ситуации выглядят одинаково, а ведут себя по-разному: панель, которую Z.ai распахнул сам, и превью, которое открыл человек. Звучит как мелочь, в коде это отдельный слой. Жест, которым вошёл в чат, осознанным не считается: иначе сайт Z.ai успевает дорисовать авто-панель, и она выглядит как твоя. Спрятанные нами панели запоминаются: сайт Z.ai переиспользует узел под превью, и если скрытие не снять, превью навсегда останется невидимым.</p>
+    <p>Между восьмой и пятнадцатой уложились ещё шесть редакций, и в каждой по паре правок: собственный пакет ru.archeonzero.azchat вместо авторского, диалог выхода, автовыбор последней модели GLM при старте, сборочный скрипт, отвязанный от конкретной машины, подпись, вынесенная из репозитория, и proguard. Про proguard отдельная песня: сборка APK в Gradle идёт чисто, release собирается, а «Назад» и скачивание молча перестают работать, потому что R8 вырезает JS-мосты из байткода. Лечится строкой в правилах, но находится не сразу.</p>
+    <h2 class="article-h2" id="sec-poltory-nedeli-prilozhenie-est-i-tut-zhe-kosyak">Полторы недели, приложение есть, и тут же косяк</h2>
+    <p><strong>Редакция пятнадцатая.</strong> Через полторы недели вечеров у меня был клиент чата на Kotlin с WebView: нейросеть открывается, сессия держится, качает файлы и не перезагружает чат при прокрутке.</p>
+    <p>И был в нём косяк, который сводил на нет половину смысла: превью файла в чате по тапу не открывалось. Файл ты прикрепил, отправил, а посмотреть, что именно отправил, не можешь. Приходилось жать «Поделиться», и только после этого превью файла в чате оживало. Выглядело как издевательство.</p>
+    <p>Причина была в моей же логике. Осознанным я считал только тап по узким местам: превью, вложение, галерея, картинка от ста двадцати пикселей. Миниатюры сайта под это не попадали, окно доверия не открывалось, и превью гасилось. А «Поделиться» попадало под селектор, поэтому и лечило. Гвоздь я потом сам же и забил в код комментарием: «Раньше здесь стояли узкие селекторы, и тап по миниатюре z.ai мимо них пролетал — превью тут же закрывалось».</p>
+    <p>Переделал всё: осознанный жест теперь любой тап внутри чата, окно доверия живёт четыре секунды и сбрасывается при входе в чат Z.ai, спрятанные панели запоминаются и возвращаются. «Назад» и Esc закрывают превью первыми, а не листают историю. Три константы, которые держат всё это:</p>
+    <pre><code class="language-kotlin">var CHAT_SETTLE_MS = 700
+var POST_ROUTE_STRICT_MS = 4000
+var INTENT_WINDOW_MS = 4000</code></pre>
+    <p>Вывод, который записал себе: <strong>эвристика по разметке чужого сайта всегда компромисс</strong>. Сегодня работает, завтра страница поменяет вёрстку, и всё поедет. <strong>Это не баг, это условие задачи</strong>: чат нейросети Z.ai живёт по своим правилам.</p>
+    <figure>
+        <img src="img/024-04-besplatnoe-prilozhenie-zai-apk-reliz-github.PNG" alt="Страница релизов GitHub: файл AZ-chat-2.0.0-release.apk бесплатного приложения Z.ai и описание версии.">
+        <figcaption>Релиз бесплатного приложения на GitHub: AZ chat 2.0.0, APK на 1,82 МБ и короткая инструкция по установке.</figcaption>
+    </figure>
+    <h2 class="article-h2" id="sec-apk-ustanovka-i-mozhet-byt-opasno">APK, установка и «может быть опасно»</h2>
+    <p>Собрать бесплатное приложение APK для чата на андроид проще, чем выложить.</p>
+    <p>Приложение не из Плей Маркета. В Google Play мне не надо: там аккаунт разработчика, targetSdk 36, сборка AAB вместо APK, политика конфиденциальности. Для обёртки вокруг Z.ai это лишний круг: ни тебе конфига сборки под AAB, ни политики хранения данных.</p>
+    <p>Поэтому бесплатный APK раздаю без магазина: релиз на GitHub, файл клиента и короткая инструкция, как поставить нейросеть на андроид. Скачать APK можно там же. Перед установкой на телефон пара фактов. Сама установка занимает минуту:</p>
+    <ul><li>пакет ru.archeonzero.azchat, версия APK 2.0.0, versionCode 20;</li><li>файл APK весит около 1,82 МБ, подпись APK и бэкап ключа хранятся вне репозитория;</li><li>Android предупредит, что APK не из магазина, и предложит проверить. Я жал «Проверить»: система посмотрела и ответила, что опасности не нашла. Это стандартная реакция на любую установку не из магазина, а не персональное предупреждение про мой файл. Тестирование на трёх устройствах это подтвердило.</li></ul>
+    <p>Многие спросят про автовход через Google: так и не сделал. Нейросеть на андроид входит через WebView, бесшовного потока у обёртки нет: вход в Z.ai работает, но это обычная веб-форма. Нативная авторизация возможна только на стороне сервиса, а её у меня нет.</p>
+    <h2 class="article-h2" id="sec-a-teper-pro-z-ai-i-glm-5-4">А теперь про Z.ai и GLM 5.4</h2>
+    <p>Пока я воевал с вложениями, Z.ai выпустила модель GLM 5.4, и в чате нейросети GLM 5.4 теперь другая квота модели. Официальный анонс датируется 22–23 ноября 2026 года.</p>
+    <p>Что известно официально:</p>
+    <ul><li>архитектура нейросети Loop Transformer: двадцать восемь слоёв среднего блока выполняются дважды;</li><li>контекст — до миллиона токенов;</li><li>нейросеть понимает изображения;</li><li>доступ к нейросети открыт подписчикам GLM Coding Plan, идентификаторы glm-5.4 и glm-5.4[1m] для Claude Code;</li><li>недельная квота выросла на пятьдесят процентов относительно GLM 5.3;</li><li>API сервиса обещан позже: он откроет приложению нейросети нативные запросы вместо WebView, веса откроют после работ по безопасности, без даты.</li></ul>
+    <p>Что говорят неофициальные источники:</p>
+    <ul><li>база «750B-scale», точное число параметров не опубликовано; в пересказах гуляет «около 700 миллиардов», но это оценка;</li><li>бенчмарков флагмана нет, есть только таблица тридцатимиллиардного эксперимента;</li><li>про GLM 5.5 говорят как про декабрьский релиз с тремя триллионами параметров, но это слух; лёгкие версии 32B, 122B и 256B, судя по разборам, внутренние чекпоинты, а не публичные модели.</li></ul>
+    <p>Бесплатная нейросеть Z.ai мне нравилась тем, что открыл, спросил, получил. В чате нейросети GLM 5.4 этот порядок не отменяет, но добавляет платный контур, квоты и ожидание API.</p>
+    <h2 class="article-h2" id="sec-kak-ustroen-chat-z-ai">Как устроен chat.z.ai</h2>
+    <p>Пока катал пятнадцать редакций APK-файла приложения, успел понять, как устроен сам chat.z.ai. Это не столько переписка, сколько нейросеть-агент: работа в Z.ai больше похожа на локальную, со своей рабочей областью и складом файлов. У приложения чат нейросети Z.ai есть внутреннее пространство, что-то вроде home/z/chat (путь воспроизводить не берусь, но место такое есть), и туда он складывает весь набор наработок сессии: файлы, документы, артефакты, которые модель собрала за разговор.</p>
+    <p>И тут хорошо, и плохо. Хорошо: <strong>сервис формирует файлы сам, тебе остаётся нажать «скачать»</strong>, и мой клиент ровно про то, чтобы они доезжали до телефона. Плохо: когда наработок двадцать и больше, при открытии бесплатного приложения чата нейросети Z.ai оно вываливает их разом, особенно в телефоне, и пока не закроешь всё подряд, сам чат не увидишь. Именно эта авто-распашка и есть панель вложений из седьмой редакции, где я щёлкал крестики штук по сорок. При всём этом продукт в основном нравится: агентное устройство делает его живым, а не витриной.</p>
+    <h2 class="article-h2" id="sec-odin-zapros">Один запрос</h2>
+    <p>Открываю <a href="https://chat.z.ai">чат нейросети Z.ai</a>, выбираю модель GLM 5.4 в селекторе моделей и отправляю сообщение: модель отвечает не сразу. Второе отправить уже не смог: в чате бесплатной нейросети Z.ai на новую модель стоит квота в единственное сообщение, и обновление квоты ждать до утра.</p>
+    <p>Причём только на неё. Остальные модели нейросети, включая нейросеть GLM 5.3, живут просторно: ответ приходит без ожидания: квота вырабатывается ближе к концу дня, и то пару раз ловил, не больше.</p>
+    <p>Оговариваю специально: это личное наблюдение, ответ зависит от нагрузки. В официальных сообщениях ограничений на чат не описано, по крайней мере на момент проверки. Может, дело в тестовом доступе, может, счётчик крутится по своей логике.</p>
+    <figure>
+        <img src="img/024-05-besplatnoe-prilozhenie-zai-glm-5-4-limity.PNG" alt="Сообщение в чате Z.ai: квота на GLM 5.4 в бесплатном приложении исчерпана после одного запроса.">
+        <figcaption>Квота на GLM 5.4 после одного сообщения: в бесплатном приложении второе отправить уже нельзя, счётчик ждёт до утра.</figcaption>
+    </figure>
+    <p>Но показательно другое: <strong>обычные модели живут весь день, а флагман даёт потрогать раз</strong>. <em>Витрина, счётчик, «зайдите позже» — бесплатное всё равно начинается с лимитов.</em></p>
+    <h2 class="article-h2" id="sec-minusy-k-kotorym-privykaesh">Минусы, к которым привыкаешь</h2>
+    <p>Есть и свои минусы, к которым придётся привыкать. Первый: нейросеть очень любит размышлять. Думает долго, отвечает тоже не сразу, поэтому объёмный запрос смело давай и иди занимайся своими делами: ответ придёт, когда нейросеть закончит. В зависимости от масштаба задачи ответа можно ждать до тридцати минут: мелочь вернётся строчкой быстро, а большую задачу оставил на столе, вернулся, и там уже лежит готовый разбор.</p>
+    <p>Второй минус — самодеятельность. Иногда нейросеть решает задачи, которые ты не просил: сам добавил, сам переделал, сам улучшил. А бывает наоборот: просишь одно, получаешь совсем другое. Лечится одинаково в обоих случаях: точной формулировкой запроса. Так что это агентная привычка: поручил нейросети задачу и не смотри в стакан, пока варится кофе.</p>
+    <h2 class="article-h2" id="sec-pochemu-z-ai-esli-deepseek-dushit-limitami">Почему Z.ai, если DeepSeek душит лимитами</h2>
+    <p>В середине ноября DeepSeek тихо ограничил бесплатных: сорок тысяч знаков на сообщение, старые диалоги закрываются через семь дней, дневная квота. Я разбирал это отдельно в статье <a href="https://vc.ru/id6054863/3270499-limity-deepseek-dlya-besplatnykh-polzovateley">Лимиты DeepSeek: что ограничили и что делать</a>, и вывод простой: бесплатный чат перестал быть рабочим инструментом.</p>
+    <p>Поэтому бесплатный чат Z.ai сейчас вариант, куда уходить. Варианты сравнивал в статье <a href="https://vc.ru/id6054863/3152654-besplatnye-neirosseti-dlya-rabotyi">Бесплатные нейросети 2026: какую выбрать под свою задачу</a>. Не идеальный, но живой: отвечает, держит длинный контекст, не заставляет прыгать по вкладкам.</p>
+    <p>Если коротко: бесплатная нейросеть DeepSeek душит квотами, Z.ai душит квотой на новую модель. Разница в том, что здесь пока есть куда расти.</p>
+    <h2 class="article-h2" id="sec-chto-eto-daet-klientu">Что это даёт клиенту</h2>
+    <p>Модель GLM 5.4 в чате меняет требования к обёртке: если она понимает картинки, камера и выбор файла перестают быть второстепенными. У меня они работают через системные диалоги, и это уже проверено.</p>
+    <p>Миллион токенов контекста — это долгие чаты, и приложение должно их переживать. А долгий чат это история, вложения и прокрутка, которая не должна перезагружать страницу.</p>
+    <p>Скачивание артефактов на бесплатном тарифе тоже стало важнее: Z.ai отдаёт готовые документы, и потерять файл в чате на выходе обиднее, чем не получить ответ.</p>
+    <p>Чего в клиенте пока нет:</p>
+    <ul><li>аккуратной работы с камерой под мультимодальные задачи;</li><li>нормального списка файлов аккаунта;</li><li>API нейросети, под который можно было бы сделать нативные запросы вместо WebView.</li></ul>
+    <h2 class="article-h2" id="sec-chego-zhdem">Чего ждём</h2>
+    <p>API для нейросети обещан, сроков нет. Веса откроют после проверок, и это правильный порядок, хотя ждать неприятно.</p>
+    <p>Если слухи про 5.5 верны, гонка продолжится, а вместе с ней и гонка обёрток: каждая новая версия требует, чтобы клиент не отставал.</p>
+    <p>Для такого приложения, как моё, вывод короткий: WebView остаётся быстрым решением, но рано или поздно придётся уходить на API. Иначе любая смена вёрстки сайта Z.ai будет ломать интерфейс.</p>
+    <h2 class="article-h2" id="sec-final">Финал</h2>
+    <p>Я скачал APK, получил вылет на кнопке «приложить файл» и сделал свой клиент чата. Пятнадцать редакций, релиз APK, подпись APK и установка APK не из Play.</p>
+    <p>А рядом, в те же дни, вышла GLM 5.4, и мой маленький проект уже немного устарел. Это нормально: <strong>пока делаешь что-то руками, мир успевает сделать шаг вперёд</strong>. Приложение живёт по тем же правилам.</p>
+    <p><a href="https://github.com/ArcheonZero/Zai-AZ-chatApp/releases">Скачать APK AZ chat 2.0.0 на GitHub</a> можно в разделе релизов.</p>
+    <p>Приложение неофициальное и бесплатное, с Zhipu AI и Z.ai не связано, нейросеть Z.ai открывается как есть. Автовхода через Google-аккаунт нет, при установке Android предупредит про неизвестный источник. Система, конечно, спросит подтверждение — так и должно быть.</p>
+    <p>Вопрос только в том, дождётся ли мой форк открытых весов или его обгонит официальное приложение, которое однажды перестанет падать на вложениях.</p>
+    <h2 class="article-h2" id="sec-chastye-voprosy">Частые вопросы</h2>
+    <p class="faq-q">Что даёт клиент, чего не даёт вкладка браузера?</p>
+    <p>Своё окно, системный выбор файлов, докачка вложений и прокрутка без перезапуска страницы. В браузере каждый из этих шагов ломается по-своему.</p>
+    <p class="faq-q">На каких телефонах пойдёт?</p>
+    <p>Android 10 и новее: тогда докачка работает без лишних разрешений.</p>
+    <p class="faq-q">Можно ли ставить, если система ругается?</p>
+    <p>Да: приложение бесплатное, предупреждение про неизвестный источник — обычная реакция. Исходники открыты, подпись своя, ключ лежит у меня.</p>
+    <p class="faq-q">Почему новая модель упирается в счётчик?</p>
+    <p>Счётчик обнуляется к утру, а на другие модели лимит не распространяется.</p>
+    <p class="faq-q">Когда появится нативная версия?</p>
+    <p>Обещали, но без даты. Пока обходимся тем, что есть.</p>
+    <p>А вы ставите приложения не из магазина или обходитесь вкладкой браузера? Напишите в комментариях, что у вас с APK и Z.ai.</p>
+    <h2 class="article-h2" id="sec-istochniki">Источники</h2>
+    <ul><li>Чат и выбор модели: <a href="https://chat.z.ai">chat.z.ai</a></li><li>Карточки моделей линейки: <a href="https://huggingface.co/zai-org/GLM-5">GLM-5</a>, <a href="https://huggingface.co/zai-org/GLM-5.2">GLM-5.2</a>, <a href="https://huggingface.co/zai-org/GLM-5.3">GLM-5.3</a></li><li>Исходный проект: <a href="https://github.com/SHSLabs/Zai-app">SHSLabs/Zai-app</a></li><li>Мой форк и релизы: <a href="https://github.com/ArcheonZero/Zai-AZ-chatApp">ArcheonZero/Zai-AZ-chatApp</a></li><li>Разбор лимитов: <a href="https://archeonzero.ru/articles/ii-kak-katalizator/deepseek-limity.html">статья про лимиты DeepSeek</a></li></ul>
+    <div class="article-tags"><span>#Z.ai</span><span>#нейросети</span><span>#Android</span><span>#APK</span><span>#GLM</span><span>#WebView</span><span>#Kotlin</span><span>#бесплатныенейросети</span><span>#приложениеZai</span></div>
+    <div class="article-nav">
+        <a class="article-nav-link" href="https://archeonzero.ru/articles/ii-kak-katalizator/deepseek-limity.html"><span class="article-nav-arrow">←</span><span><span class="article-nav-title">Предыдущая: Лимиты DeepSeek: что ограничили и что делать</span></span></a>
+    </div>
+</article>
+<aside class="sb sb-right" aria-label="Оглавление статьи">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-para-strok-aga">Пара строк, ага</a>
+        <a href="#sec-pochemu-obertka-a-ne-svoe-s-nulya">Почему обёртка, а не своё с нуля</a>
+        <a href="#sec-repo-nashlos-i-srazu-s-syurprizom">Репо нашлось, и сразу с сюрпризом</a>
+        <a href="#sec-redakciya-za-redakciey">Редакция за редакцией</a>
+        <a href="#sec-poltory-nedeli-prilozhenie-est-i-tut-zhe-kosyak">Полторы недели, приложение есть, и тут же косяк</a>
+        <a href="#sec-apk-ustanovka-i-mozhet-byt-opasno">APK, установка и «может быть опасно»</a>
+        <a href="#sec-a-teper-pro-z-ai-i-glm-5-4">А теперь про Z.ai и GLM 5.4</a>
+        <a href="#sec-kak-ustroen-chat-z-ai">Как устроен chat.z.ai</a>
+        <a href="#sec-odin-zapros">Один запрос</a>
+        <a href="#sec-minusy-k-kotorym-privykaesh">Минусы, к которым привыкаешь</a>
+        <a href="#sec-pochemu-z-ai-esli-deepseek-dushit-limitami">Почему Z.ai, если DeepSeek душит лимитами</a>
+        <a href="#sec-chto-eto-daet-klientu">Что это даёт клиенту</a>
+        <a href="#sec-chego-zhdem">Чего ждём</a>
+        <a href="#sec-final">Финал</a>
+        <a href="#sec-chastye-voprosy">Частые вопросы</a>
+    </div>
+</aside>
+<button class="toc-toggle" aria-expanded="false" aria-controls="tocPanel" title="Содержание статьи">☰</button>
+<div class="toc-panel" id="tocPanel" role="navigation" aria-label="Содержание статьи (мобильное)">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-para-strok-aga">Пара строк, ага</a>
+        <a href="#sec-pochemu-obertka-a-ne-svoe-s-nulya">Почему обёртка, а не своё с нуля</a>
+        <a href="#sec-repo-nashlos-i-srazu-s-syurprizom">Репо нашлось, и сразу с сюрпризом</a>
+        <a href="#sec-redakciya-za-redakciey">Редакция за редакцией</a>
+        <a href="#sec-poltory-nedeli-prilozhenie-est-i-tut-zhe-kosyak">Полторы недели, приложение есть, и тут же косяк</a>
+        <a href="#sec-apk-ustanovka-i-mozhet-byt-opasno">APK, установка и «может быть опасно»</a>
+        <a href="#sec-a-teper-pro-z-ai-i-glm-5-4">А теперь про Z.ai и GLM 5.4</a>
+        <a href="#sec-kak-ustroen-chat-z-ai">Как устроен chat.z.ai</a>
+        <a href="#sec-odin-zapros">Один запрос</a>
+        <a href="#sec-minusy-k-kotorym-privykaesh">Минусы, к которым привыкаешь</a>
+        <a href="#sec-pochemu-z-ai-esli-deepseek-dushit-limitami">Почему Z.ai, если DeepSeek душит лимитами</a>
+        <a href="#sec-chto-eto-daet-klientu">Что это даёт клиенту</a>
+        <a href="#sec-chego-zhdem">Чего ждём</a>
+        <a href="#sec-final">Финал</a>
+        <a href="#sec-chastye-voprosy">Частые вопросы</a>
+    </div>
+</div>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2 class="article-h2">Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="../../index.html#proekty">Проекты</a>
+            <a href="../../index.html#stati">Статьи</a>
+            <a href="../../index.html#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+<script>
+(function(){
+  var tt=document.querySelector('.toc-toggle'), tp=document.getElementById('tocPanel');
+  if(!tt||!tp) return;
+  tt.addEventListener('click',function(){ var o=tp.classList.toggle('open'); tt.setAttribute('aria-expanded', o?'true':'false'); });
+  tp.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='A'){ tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); } });
+  document.addEventListener('click',function(e){ if(!tp.classList.contains('open')) return; if(tp.contains(e.target)||tt.contains(e.target)) return; tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); });
+})();
+</script>
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['mono', 'term', 'paper', 'ice', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+    // Плавающая кнопка-бургер «Содержание»
+    var tocToggle = document.querySelector('.toc-toggle');
+    var tocPanel = document.getElementById('tocPanel');
+    if (tocToggle && tocPanel) {
+        tocToggle.addEventListener('click', function () {
+            var open = tocPanel.classList.toggle('open');
+            tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        tocPanel.addEventListener('click', function (e) {
+            if (e.target && e.target.tagName === 'A') {
+                tocPanel.classList.remove('open');
+                tocToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (!tocPanel.classList.contains('open')) { return; }
+            if (tocPanel.contains(e.target) || (tocToggle && tocToggle.contains(e.target))) { return; }
+            tocPanel.classList.remove('open');
+            tocToggle.setAttribute('aria-expanded', 'false');
+        });
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>

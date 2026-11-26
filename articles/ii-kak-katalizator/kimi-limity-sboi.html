@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нейросеть Kimi: лимиты, сбои и 34 инцидента — пока DeepSeek молчит — Archeon Zero</title>
+    <meta name="description" content="За 20 дней ноября — 34 записи об инцидентах Kimi: сбои, задержки и сгоревшие квоты. Пока DeepSeek молча режет лимиты, Kimi извиняется и компенсирует 25%.">
+    <meta name="keywords" content="Kimi, нейросеть Kimi, лимиты Kimi, Kimi Code, DeepSeek лимиты, подписка Kimi, Kimi не работает, сбои Kimi, китайские нейросети">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="Archeon Zero">
+    <meta property="og:title" content="Нейросеть Kimi: лимиты, сбои и 34 инцидента — пока DeepSeek молчит">
+    <meta property="og:description" content="За 20 дней ноября — 34 записи об инцидентах Kimi: сбои, задержки и сгоревшие квоты. Пока DeepSeek молча режет лимиты, Kimi извиняется и компенсирует 25%.">
+    <meta property="og:image" content="img/025-01-neyroset-kimi-limity-oblozhka.png">
+    <meta property="article:section" content="Нейросети">
+    <meta property="article:tag" content="Kimi, нейросети, лимиты, Kimi Code, сбои">
+    <style>
+        /* Стили статейного контента поверх темы сайта (заголовки/текст/картинки ограничиваем). */
+        .container article { max-width: 780px; margin: 0 auto; padding: 48px 24px 20px; }
+        .article-topline { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; color: inherit; opacity: .75; margin-bottom: 8px; }
+        .article-h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; }
+        .article-lead { color: var(--muted); font-size: 16px; line-height: 1.6; margin-bottom: 0; }
+        .article-hr { border: 0; border-top: 1px solid var(--line); margin: 32px 0; }
+        .article-h2 { font-family: Georgia, serif; font-size: 26px; line-height: 1.25; margin: 40px 0 14px; }
+        .article p { font-size: 17px; line-height: 1.75; color: var(--ink); }
+        .article-lyrics { font-family: Georgia, serif; font-style: italic; font-size: 22px; line-height: 1.5; color: var(--ink-soft); margin: 8px 0; }
+        .article-lyrics-attrib { margin-top: 6px; color: var(--muted); font-size: 14px; font-style: normal; }
+        .article figure { margin: 32px 0; }
+        .article figure img { width: 100%; max-width: 760px; height: auto; display: block; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.14); }
+        .article figcaption { color: var(--muted); font-size: 13.5px; margin-top: 10px; font-style: italic; }
+        .article pre { background: var(--deep); color: #dce6f0; padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 14.5px; line-height: 1.5; }
+        .article-kinds { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 22px; margin: 26px 0; }
+        .article-kinds strong { display: block; margin-bottom: 6px; }
+        .faq-q { font-weight: 700; margin-top: 22px; }
+        .article-tags { margin: 12px 0; }
+        .article-tags span { display: inline-block; background: #ece7dc; color: var(--ink-soft); font-size: 12.5px; padding: 4px 11px; border-radius: 999px; margin: 0 6px 8px 0; }
+        .article-nav { display: flex; gap: 12px; margin: 34px 0 8px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+        .article-nav-link { flex: 1; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-decoration: none;
+                            background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--ink);
+                            transition: border-color .18s, background .18s; }
+        .article-nav-link:hover { border-color: var(--accent); background: var(--surface-2); }
+        .article-nav-next { justify-content: flex-end; text-align: right; }
+        .article-nav-arrow { font-size: 20px; color: var(--accent); line-height: 1; }
+        .article-nav-title { font-size: 13.5px; line-height: 1.4; color: var(--ink-soft); display: block; }
+        /* Две зоны-сайдбара (фикс. при скролле, как глава книги):
+           слева — статьи цикла DevCrm; справа — оглавление статьи. Контент — по центру. */
+        .layout { display: flex; gap: 28px; align-items: flex-start; max-width: 1260px; margin: 0 auto; padding: 0 24px; }
+        .layout article { flex: 1 1 auto; max-width: 760px; margin: 0; min-width: 0; order: 2; }
+        .sb { width: 270px; flex: 0 0 270px; position: sticky; top: 24px; align-self: flex-start;
+              max-height: calc(100vh - 48px); overflow-y: auto; padding: 20px 18px;
+              background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+              font-size: 13.5px; line-height: 1.45; }
+        .sb-left { order: 1; }
+        .sb-right { order: 3; }
+        .sb h3 { font-family: Georgia, serif; font-size: 12px; margin: 14px 0 8px; letter-spacing: .08em;
+                 text-transform: uppercase; color: var(--muted); }
+        .sb h3:first-child { margin-top: 0; }
+        .sb a { display: block; padding: 3px 0; text-decoration: none; color: var(--ink-soft); }
+        .sb a:hover { color: var(--accent); }
+        .sb a.sb-active { color: var(--accent); font-weight: 700; }
+        .sb .toc { counter-reset: toc; }
+        .sb .toc a::before { counter-increment: toc; content: counter(toc) ". "; color: var(--muted); }
+        @media (max-width: 1100px) {
+            .sb-right { display: none; }
+
+        }
+        @media (max-width: 900px) {
+            .layout { flex-direction: column; padding: 0 16px; }
+            .layout article { max-width: 100%; }
+            .sb { width: 100%; flex: 1 1 auto; position: static; max-height: none; order: -1; }
+        }
+        /* Плавающая кнопка-бургер для оглавления (появляется вместо скрытого сайдбара на узких экранах) */
+        .toc-toggle { display: none; position: fixed; top: 14px; right: 14px; z-index: 1000;
+                      width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--line);
+                      background: var(--surface); color: var(--ink); cursor: pointer;
+                      align-items: center; justify-content: center; font-size: 18px;
+                      box-shadow: 0 4px 14px rgba(0,0,0,.12); transition: background .18s, border-color .18s; }
+        .toc-toggle:hover { border-color: var(--accent); background: var(--surface-2); }
+        .toc-panel { display: none; position: fixed; top: 66px; right: 14px; z-index: 1000;
+                     width: 240px; max-height: calc(100vh - 90px); overflow-y: auto;
+                     background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+                     padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.16); }
+        .toc-panel.open { display: block; }
+        .toc-panel h3 { font-family: Georgia, serif; font-size: 12px; margin: 0 0 8px; letter-spacing: .08em;
+                        text-transform: uppercase; color: var(--muted); }
+        .toc-panel a { display: block; padding: 4px 0; text-decoration: none; color: var(--ink-soft); font-size: 13.5px; line-height: 1.4; }
+        .toc-panel a:hover { color: var(--accent); }
+        @media (max-width: 1100px) { .toc-toggle { display: flex; } }
+    </style>
+    <link rel="stylesheet" href="../../themes.css">
+    <style>
+        /* fallback-палитра, если themes.css недоступен локально */
+        :root { --paper:#f6f4ee; --surface:#fffdf8; --surface-2:#f1ede3; --ink:#171a1f; --ink-soft:#33383f;
+                --muted:#6b7078; --line:#e3ded3; --accent:#c2410c; --deep:#121a24;
+                --logo-stem:#171a1f; --logo-c1:#c2410c; --logo-c2:#b45309; --logo-c3:#6b7078; }
+    </style></head>
+<body>
+<a class="skip-link" href="#main">К содержанию</a>
+
+<!-- Переключатель шаблонов. themes.css: body[data-theme] => каждый шаблон. -->
+<button class="ts-toggle" aria-expanded="false" aria-controls="themeSwitcher" title="Переключатель темы и логотипа">✦</button>
+<div class="theme-switcher" id="themeSwitcher" role="group" aria-label="Выбор шаблона">
+    <span class="ts-label">оформление</span>
+        <button data-theme-btn="mono">классика</button>
+    <button data-theme-btn="term">терминал</button>
+    <button data-theme-btn="paper">редакция</button>
+    <button data-theme-btn="ice">лёд</button>
+    <button data-theme-btn="cyan">фрактал</button>
+    <button data-theme-btn="soft">мягкий</button>
+    <button data-theme-btn="amber">янтарь</button>
+    <button data-theme-btn="emerald">изумруд</button>
+    <button data-theme-btn="amethyst">аметист</button>
+    <span class="ts-sep"></span>
+    <span class="ts-label">логотип</span>
+    <button data-logo-btn="tree">дерево</button>
+    <button data-logo-btn="sphere">сфера</button>
+    <button data-logo-btn="globe">глобус</button>
+    <button data-logo-btn="ray">ловец снов</button>
+    <button data-logo-btn="branch">ветви</button>
+    <button data-logo-btn="az">AZ-знак</button>
+    <span class="ts-note">выбор сохраняется</span>
+</div>
+
+<header class="site-header">
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <span class="topbar-dot">◆</span>
+            <span>точка сборки</span>
+            <span class="topbar-tagline">код · текст · наблюдения</span>
+        </div>
+    </div>
+    <div class="container header-main">
+        <a class="brand" href="/">
+            <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- ФОРМА: ДЕРЕВО (рекурсивные ветви) -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="f3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="f2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#f3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="f1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#f2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#f1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#f1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: СФЕРА (рекурсивные окружности-орбиты) -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="s3">
+                            <circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/>
+                        </g>
+                        <g id="s2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#s3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#s3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#s3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="s1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#s2" transform="scale(0.82)"/>
+                            <use href="#s2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#s2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#s1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+
+                <!-- ФОРМА: ГЛОБУС (сфера с меридианами) -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="g1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#g1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+
+                <!-- ФОРМА: ПУЧОК ДУГ (концентрические круги + кривые из центра, ветвятся до края) -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <defs>
+                        <!-- Ветвь, идущая от одной опоры до следующей (до 1/3 или 2/3). база: от (0,0) до (0,-8). -->
+                        <g id="rrSeg"><line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/></g>
+                        <!-- 4-лист: ось 0..24; на r=8 (1/3) -> 2 ветви; каждая на r=16 (2/3) -> ещё 2 -->
+                        <g id="rrLeaf">
+                            <!-- центральная ось 0..24 -->
+                            <line x1="0" y1="0" x2="0" y2="-24" stroke="var(--logo-c1)" stroke-width="1.1" stroke-linecap="round"/>
+                            <!-- ветвь левая на 1/3: от (0,-8) наклон вверх-влево до 2/3 -->
+                            <line x1="0" y1="-8" x2="-7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 (r=16): два кончика до края (r=24) -->
+                            <line x1="-7" y1="-16" x2="-11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="-7" y1="-16" x2="-1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <!-- ветвь правая на 1/3 -->
+                            <line x1="0" y1="-8" x2="7" y2="-16" stroke="var(--logo-c2)" stroke-width="1" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 -->
+                            <line x1="7" y1="-16" x2="11" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                            <line x1="7" y1="-16" x2="1" y2="-24" stroke="var(--logo-c3)" stroke-width="0.9" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 лучей, ветвление 1->2->4 по невидимым кругам 1/3 и 2/3 -->
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+<g class="logo-form logo-form--branch" data-form="branch">
+                    <defs>
+                        <!-- ветвь-дуга: центральная ось изогнута, на 1/3 (r=8) и 2/3 (r=16) -- раздвоение на дуги -->
+                        <g id="bLeaf">
+                            <!-- центральная дуга: изгиб сильнее -->
+                            <path d="M0,0 Q9,-12 0,-24" stroke="var(--logo-c1)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+                            <!-- левая ветвь от 1/3 до 2/3, изгиб сильнее -->
+                            <path d="M0,-8 Q-8,-12 -9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M-9,-16 Q-17,-20 -18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M-9,-16 Q-5,-20 -1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <!-- правая ветвь от 1/3 до 2/3 -->
+                            <path d="M0,-8 Q8,-12 9,-16" stroke="var(--logo-c2)" stroke-width="1" fill="none" stroke-linecap="round"/>
+                            <!-- её раздвоение на 2/3 до края -->
+                            <path d="M9,-16 Q17,-20 18,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                            <path d="M9,-16 Q5,-20 1,-24" stroke="var(--logo-c3)" stroke-width="0.9" fill="none" stroke-linecap="round"/>
+                        </g>
+                    </defs>
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <!-- 6 осей-дуг с дуговым ветвлением на невидимых кругах 1/3 и 2/3 -->
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак (треугольник в двух разомкнутых кольцах + кристалл сверху) -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <span class="brand-text">
+                <span class="brand-name">Archeon<em>Zero</em></span>
+                <span class="brand-sub">разработчик · автор · системный сборщик</span>
+            </span>
+        </a>
+        <div class="header-desc">Разработчик, инженер сознания, Архитектор процессов. Собираю из слоёв: код, текст, музыка, состояния.</div>
+    </div>
+    <nav class="main-nav" aria-label="Основная навигация">
+        <div class="container nav-inner">
+            <a class="nav-link" href="../../index.html">Главная</a>
+            <a class="nav-link" href="../../index.html#proekty">Проекты</a>
+            <a class="nav-link is-active" href="../../index.html#stati">Статьи</a>
+            <a class="nav-link" href="../../index.html#ploshadki">Площадки</a>
+            <a class="nav-link" href="../../index.html#kontakty">Контакты</a>
+        </div>
+    </nav>
+</header>
+<main class="site-main" id="main">
+    <div class="container layout">
+<aside class="sb sb-left" aria-label="Разделы сайта и цикл об ИИ">
+    <h3>Цикл об ИИ и нейросетях</h3>
+    <a href="https://archeonzero.ru/articles/ii-kak-katalizator/deepseek-limity.html">Лимиты DeepSeek: что ограничили</a>
+    <span>Клиент Z.ai и GLM 5.4 — готовится</span>
+    <a class="sb-active" href="kimi-limity-sboi.html">Kimi: лимиты и сбои</a>
+    <a href="https://teletype.in/@archeonzero/tzRy6yAz0FA" target="_blank">Нейросеть Qwen в 2026</a>
+    <a href="https://teletype.in/@archeonzero/TKkJXqqqwgD" target="_blank">Бесплатные нейросети 2026: какую выбрать</a>
+    <a href="https://teletype.in/@archeonzero/QPNcxhS3Hdh" target="_blank">Бесплатные нейросети и ИИ-агенты</a>
+    <a href="https://teletype.in/@archeonzero/H-Vh-ax7obe" target="_blank">Чему ИИ нас учит</a>
+</aside>
+        <article class="article">
+    <div class="article-topline">ИИ как катализатор · № 025 · Kimi / DeepSeek</div>
+    <h1 class="article-h1">Пока DeepSeek прячется под корягу, нейросеть Kimi захлёбывается и молит о пощаде</h1>
+    <figure>
+        <img src="img/025-01-neyroset-kimi-limity-oblozhka.png" alt="Нейросеть Kimi и DeepSeek: лимиты, сбои и очереди в ноябре 2026 на картинке-обложке">
+        <figcaption>Слева молчащий DeepSeek, справа Kimi, которая светится от нагрузки и вот-вот рассыплется.</figcaption>
+    </figure>
+    <p><strong>Кратко:</strong> DeepSeek после 8,6-кратного роста нагрузки молча срезал лимиты бесплатным и не объясняется. Kimi (Moonshot AI) пошла другим путём: публично признала перерасход квоты, компенсировала подписчикам и всё равно не справилась, очереди достаются и платным, а лимиты Kimi Code урезаны. Две тактики, причина общая: железо не успевает за спросом.</p>
+    <h2 class="article-h2" id="sec-moy-zahod-v-kimi">Мой заход в Kimi</h2>
+    <p>Пока сидел и ломал голову какую нейросетку использовать, дай думаю зайду потестирую пока не тронутую Kimi. Зашел в чат и уже после первого сообщения мне пишут что сеть перегружена переходите на платный тариф или зайдите позже и что самое интересное так происходило несколько дней, один запрос или ни одного вовсе и всё простите-извините. Думаю дай посмотрю что да как там обстоят дела, а тааам, всё еще хуже чем у DeepSeek.</p>
+    <p>Так я и попал в этот сюжет: сначала как пользователь, который просто хотел спросить, потом как человек, который сел считать инциденты.</p>
+    <h2 class="article-h2" id="sec-chto-sluchilos-19-noyabrya">Что случилось 19 ноября</h2>
+    <p>19 ноября нейросеть Kimi пережила массовый сбой. Пользователи жаловались на недоступность сайта и приложения, медленную загрузку и проблемы со входом. Сбой нейросети Kimi затронул и API, и вход. Чат с нейросетью в те часы больше напоминал очередь: форма открывается, а ответа нет. Логи инцидентов и пинг сервиса показывали то же самое. По данным агрегатора сбоев <a href="https://instatus.com/now/kimi.com/outages/2026-11-19-09">instatus</a>, инцидент длился около трёх часов, в пике, до 98 пользовательских жалоб в час (статус-борд при этом публиковал только два эпизода «низкой доступности API», разница методик: жалобы пользователей против записей провайдера).</p>
+    <p><a href="https://status.moonshot.cn">Статус-борд Moonshot</a> подтвердил картину и даже время. Инцидент, деградация, аптайм: три слова, которыми потом описывался весь месяц. В 17:25 по пекинскому времени (09:25 UTC) появился первый постинг «низкая доступность API», его закрывали 80 минут, затем инцидент всплыл повторно ещё на 20 минут. Параллельно фиксировалась «аномалия входа через Google» (13 минут). К вечеру всё закрыли как resolved, но осадок остался: это был не точечный сбой, а день, когда сервис целиком застревал в очередях.</p>
+    <p>Важная деталь для российской аудитории: 17 ноября, за два дня до этого, российские пользователи массово ловили сбои сразу у Google, DeepSeek и Discord, об этом писала <a href="https://www.fontanka.ru/2026/11/17/76772095">«Фонтанка»</a>. Так что часть жалоб из Москвы и Петербурга на «неработающий Kimi» в те дни могла быть сетевой, а не проблемой самой Kimi. Географию жалоб в статье лучше не форсировать.</p>
+    <figure>
+        <img src="img/025-02-kimi-ochered-uzkoe-mesto.png" alt="Очередь к нейросети Kimi: узкое место нагрузки, сбои и лимиты 19 ноября">
+        <figcaption>Чат с нейросетью в те часы напоминал трубу с сужением: запросы копятся на входе.</figcaption>
+    </figure>
+    <h2 class="article-h2" id="sec-hronologiya-mesyac-shtorma">Хронология: месяц шторма</h2>
+    <p>Это не единичный случай и не «вирус». Это серия деградаций, растянутая на недели: нагрузка росла, а вместе с ней росла и очередь. В такие недели аптайм держится на честном слове, и любой сбой бьёт по всем моделям сразу. Чаще других в этих записях фигурирует Kimi K3: на него приходится почти вся тяжесть месяца. За первые 20 дней ноября статус-борд Moonshot опубликовал 34 постинга об инцидентах, в среднем 1,7 постинга в день. Методика честная: считаю по <a href="https://traycer.ai/status/kimi">статус-фиду</a>, где многочасовой эпизод публиковался почасово, то есть независимых аварий меньше тридцати четырёх, но каждая запись это официально признанная деградация, а не жалоба пользователя. А если взять последние семь недель (со 2 октября), набирается ровно 50 постингов за 50 дней, по инциденту в день.</p>
+    <figure><img src="img/025-06-tablica-hronologiya-noyabrya.png" alt="Хронология ноября 2026: 12 эпизодов деградаций Kimi с датами и длительностью"><figcaption>Хронология ноября по официальным записям</figcaption></figure>
+    <p>Расшифровка терминов для читателя: TTFT это «время до первого токена», то есть сколько секунд сервис думает, прежде чем начать отвечать; OTPS это скорость генерации ответа. Оба показателя в ноябре проседали чаще остальных метрик.</p>
+    <p>Отдельно про самую тяжёлую ночь. С 31 октября по 1 ноября сервис почти сутки не мог держать скорость генерации K3: статус-борд публиковал новый постинг буквально каждый час, и в каждом сообщении звучало «серьёзное снижение скорости генерации», от полутора часов до почти восьми. Это не «заметили и починили за пять минут» это день, когда compute кончился.</p>
+    <p>Октябрь был только разминкой: ошибки поиска 2 и 9 октября, задержки 21-го, волна TTFT-инцидентов 26–28 октября, и сразу после этого началась октябрьско-ноябрьская «ночь генерации».</p>
+    <p>Это не атака и не вирус. Это перегрузка от собственного роста.</p>
+    <h2 class="article-h2" id="sec-cifra-kotoraya-vse-obyasnyaet">Цифра, которая всё объясняет</h2>
+    <p>Если свести 90 дней наблюдений по компонентам Kimi (зеркало официального статус-фида Moonshot, снимок от 24 ноября), картина становится однозначной. Сайт: 100% uptime по пингу и логам провайдера. Админка провайдера видит нагрузку первой, пользователю достаётся только плашка. Открытый API: 99,94%. Поиск: 99,95%. Файловая загрузка: 99,97%. Прошлая линейка: 100%. Актуальный флагман, K3.1 Pro, держит 99,69%, его Highspeed-версия: 98,66%.</p>
+    <p>А теперь то, из-за чего весь разговор: <strong>нейросеть Kimi K3, флагман прошлого поколения, держит 92,17% uptime за 90 дней</strong>. Худший показатель во всей системе, с отрывом. Модель Kimi K3 тянула всю нагрузку осени.</p>
+    <p>Переведём: за последние три месяца линейка K3 была полностью исправна примерно 83 дня из 90. Семь дней её либо лихорадило, либо она лежала. Шторм бил именно по прошлому поколению; актуальный K3.1 Pro пока держится, но застрахованным его считать нельзя: 20 ноября инциденты прошли одновременно по K3, K3.1 Pro, Highspeed и K2.8 Preview.</p>
+    <h2 class="article-h2" id="sec-platnye-tozhe-zadyhayutsya">Платные тоже задыхаются</h2>
+    <p>Самое болезненное в этой истории: <strong>платный тариф не спасает</strong>. Оплата даёт модель, но не место в очереди: квота, пик и латентность бьют и по подписчикам. Квота токенов Kimi сгорает за один длинный сеанс.</p>
+    <p>25 октября, через день после выхода K3.1 Pro, Moonshot AI <a href="https://seekingalpha.com/news/4657086-moonshot-ai-resets-kimi-k3_1-pro-quotas-after-user-complaints">публично признала</a>: новая модель расходует квоту «ненужным образом», и объявила компенсацию. По сообщениям Seeking Alpha, подписчикам, которые успели израсходовать менее 25% лимита, обнулили счётчик расхода; по оценке самой компании, восстановленный объём это примерно неделя использования. Пресса подхватила формулу «компенсация 25% месячной квоты».</p>
+    <p>Причина в архитектуре. K3.1 Pro ест квоту быстрее, чем Kimi K3: при сложном запросе нейросеть запускает <strong>суб-агентов</strong>: вспомогательные процессы, которые разбивают задачу на части и каждую решают отдельно. Каждый такой процесс расходует отдельные токены на размышление, инструменты и проверку ошибок. Цепочка из пяти агентов на одном «проверь проект» сжигает окно квоты со скоростью, которую пользователь не ожидает ни от какой предыдущей версии. Каждый такой ИИ-агент, отдельный расход, и подписка Kimi Code выгорает быстрее, чем кажется.</p>
+    <p>Характерные жалобы из сообщества (единичные источники): пользователь отправил короткий запрос «проверь архитектуру проекта», K3.1 Pro запустила пять суб-агентов, и через 15 минут его 5-часовое окно квоты было исчерпано. Другой на видео-задаче сжёг 87% пятичасового лимита, так и не получив результата. Аналогичное массовое настроение видно в Reddit-треде «Kimi 2.7 Code съедает лимит на порядки быстрее, чем K2.6».</p>
+    <figure>
+        <img src="img/025-03-kimi-sub-agenty-limit-kvoty.png" alt="Лимиты Kimi: запрос дробится на суб-агентов, квота и токены сгорают">
+        <figcaption>Одно окно, пять суб-агентов: квота сгорает быстрее, чем приходит ответ.</figcaption>
+    </figure>
+    <p>И даже когда квота формально есть, нейросеть может <em>не пустить</em> платного: в часы пик пользователи видят предложение «сервис перегружен, попробуйте позже или обновите тариф для ускорения». То есть деньги подписки гарантируют доступ к модели, но не гарантируют доступ к мощностям.</p>
+    <p>Параллельно Kimi урезает лимиты Kimi Code, без анонса и без объяснений. По <a href="https://www.reddit.com/r/kimi/comments/1vnl28x/kimi_code_has_reduced_weekly_usage_limits_to_37">сообщениям сообщества</a> (Reddit, без официального анонса), недельные лимиты Kimi Code срезали примерно до <strong>37% от прежних</strong>, с ~$670 до ~$250 в неделю на старшем тарифе. Справка Kimi при этом уточняет: у новых тарифов недельного лимита нет вовсе, только скользящее 5-часовое окно; жалобы касаются «наследных» планов, где недельный лимит сохраняется. А с 31 октября линейка K2 закрыта для новых пользователей API, старые модели уходят на пенсию, и весь трафик замыкается на K3.1 Pro.</p>
+    <figure><img src="img/025-07-tablica-tarify-kimi-code.png" alt="Тарифы Kimi Code: Adagio, Plus, Pro, Max и Ultra — цены и лимиты на ноябрь 2026"><figcaption>Подписка Kimi Code: <a href="https://omidsaffari.com/blog/kimi-pricing">тарифная сетка</a> (omidsaffari, ноябрь 2026)</figcaption></figure>
+    <p>Общая механика подписки Kimi: у новых тарифов действует скользящее 5-часовое окно расхода, у старых, ещё и недельный лимит с сбросом раз в 7 дней. Лимиты нейросети Kimi считаются по кредитам, а кредиты переводятся в токены. И важный нюанс: даже обычный чат на K2.6 теперь расходует кредиты подписки: «просто поболтать бесплатно в подписке» больше не существует.</p>
+    <h2 class="article-h2" id="sec-pochemu-eto-proishodit-umnaya-model-prozhorlivaya-model">Почему это происходит: «умная» модель = «прожорливая» модель</h2>
+    <p>Модель нейросети Kimi <a href="https://huggingface.co/moonshotai/Kimi-K3.1-Pro">K3.1 Pro</a>, 3T-класса: 2,8 трлн параметров в MoE-архитектуре (104 млрд активных на токен), контекст 1 миллион токенов, нативная мультимодальность, MXFP4-квантование при обучении. Разработка шла вокруг агентных сценариев, и каждая новая фича добавляет запросы. Программирование под агентов требует другого бюджета, чем обычный чат. Ни фреймворк, ни язык тут не спасают: узкое место железо. Она создана для долгих агентских задач: сама разбивает задачу, вызывает инструменты, запускает суб-агентов, проверяет себя и исправляет ошибки. Это её сила. И её проклятие.</p>
+    <p>Когда пользователь просит «проверь архитектуру», нейросеть не отвечает текстом. Она <strong>запускает флот ИИ-агентов</strong>, которые делают работу за него. Каждый агент это лишние токены, лишняя латентность и лишняя нагрузка на серверы. Токены Kimi Code при этом расходуются быстрее, чем обновляется квота. Результат может быть отличным. Но <em>каждый шаг стоит токенов, а каждый токен стоит денег</em>.</p>
+    <figure>
+        <img src="img/025-04-kimi-arhitektura-moe-set.png" alt="Архитектура нейросети Kimi K3.1 Pro: MoE на 2,8 трлн параметров и суб-агенты">
+        <figcaption>Модель выросла до 2,8 трлн параметров: сеть экспертов, и каждый запуск тянет за собой флот агентов.</figcaption>
+    </figure>
+    <p>Самое интересное, экономика, и тут числа противоречат интуиции. По данным теста <a href="https://www.requesty.ai/blog/kimi-k3-1-pro-pricing-api">Requesty</a> на приватных задачах (129 backend-проектов на Go), K3.1 Pro решает 81% задач против 92% у Claude Opus 5.5, но стоимость одного решения, $1,04 против $2,16 у GLM-5.3. GLM-5.3 в том же тесте генерировала в среднем 95 000 выходных токенов на задачу против 13 000 у K3.1 Pro. То есть Kimi на уровне цен за токен, одна из самых выгодных моделей рынка. Проблема в другом: на одну задачу стала уходить в разы больше токенов, чем раньше, потому что задача теперь решается флотом агентов, а не цельным ответом. Публичных бенчмарков у флагмана почти нет: тест Requesty остаётся редким независимым замером.</p>
+    <p>API-цены при этом снизились, и для разработчика это значит считать бюджет на запросы, а не на подписку. Шифрование трафика и ключи доступа живут на стороне сервиса, в конфиге у клиента только адрес и токен. Для нейросети это обычная история: токен дешевеет, а задача дорожает. Токены модели Kimi стоят дешевле, но их уходит заметно больше, и считать надо задачи, а не строки в счёте. Тарифы K3.1 Pro снизили на треть относительно K3. Вход стоит <a href="https://eu.36kr.com/en/p/4039236862514306">13 юаней</a> за миллион токенов вместо примерно 20, выход 68 юаней вместо примерно 100, кэшированный вход 1,3 юаня. В долларах это $2 за миллион входных и $10 за миллион выходных токенов. Есть и Highspeed-вариант, в 2–3 раза быстрее, но вдвое дороже.</p>
+    <p>Получается парадокс, который и есть главный сюжет: <strong>цена за токен падает, цена за реальную задачу растёт</strong>. Запрос на новой модели может стоить как десять на старой. Пользователи модели Kimi чувствуют, как «кошелёк испаряется», а провайдер честно показывает сниженный прайс: нейросеть считает токены, а не задачи. Оба правы: единица измерения изменилась, от токена к workflow.</p>
+    <h3 class="article-h3">Деградация: где её чувствуешь</h3>
+    <p>Кстати, про деградацию. Я сталкивался с ней лично, и в двух разных видах. В чатах она чувствуется ближе к концу строки, когда объём контекста начинает давить на внутреннюю оперативку ИИ-агента. Это частично лечится промптами и распределением задач. А на локальном стенде та же история происходит уже на уровне железа: когда параллельно работают несколько нейросетевых моделей, оперативная память доходит до пиковых и предельных значений загрузки, и модель начинает глючить по-жёсткому, файлы не складывает, ошибок куча.</p>
+    <p>Отсюда и вывод: «деградация» в статус-борде не абстракция. Это тот же перегрев, только на стороне провайдера, и виноват не отдельный запрос, а суммарная нагрузка.</p>
+    <h2 class="article-h2" id="sec-besplatnyy-tarif-chto-ostalos">Бесплатный тариф: что осталось</h2>
+    <p>Бесплатная нейросеть Kimi на плане Adagio формально жива: безлимитный базовый чат без жёсткого дневного лимита сообщений, одна агентская задача одновременно, две отложенные, два проекта, 500 МБ под файлы. Агентских надстроек и миллионного контекста в бесплатном плане нет. Для бесплатной нейросети это щедро; на практике бесплатная нейросеть Kimi упирается в очередь в часы пик.</p>
+    <p>Фактически бесплатный пользователь Kimi в ноябре получал опыт, знакомый по DeepSeek-кризису: очереди в часы пик, всплывающие предложения «обновите тариф», сбои и деградации в пиковые дни. Разница только в том, что у Kimi это сопровождается извинениями и компенсациями, платным. Бесплатным достаётся та же инфраструктура без компенсаций. Бесплатная нейросеть получает ту же очередь, только без извинений.</p>
+    <h2 class="article-h2" id="sec-eto-ne-edinstvennyy-front-distillyacionnyy-skandal">Это не единственный фронт: дистилляционный скандал</h2>
+    <p>Шторм на статус-борде, не единственная проблема Moonshot. Компания параллельно оказалась в центре самого неприятного сюжета осени.</p>
+    <p>30 сентября OpenAI сообщила, что пресекла координированную кампанию дистилляции, извлечения «рассуждений» защищённых моделей через манипуляции между диалогами. Пик пришёлся на 24–25 июля: 16 000 запросов от более чем 4 000 пользователей, задействован кластер из 15 000+ аккаунтов: скрипты и боты гоняли запросы, а спам-фильтры ловили это с опозданием. Ядро кампании OpenAI связала с людьми, ассоциированными с Moonshot AI.</p>
+    <p>12 октября Anthropic добавила деталей: она заявляет о снижении дистилляционных атак более чем на 90% и прямо обвинила Kimi в том, что сервис незаметно пересылал пользовательские запросы Claude для дистилляции. В том же заявлении досталось и Zhipu (дистилляция «кибер-способностей» для GLM-5.3). Сюжет вышел за пределы технократических блогов: Bloomberg выпускал разбор о том, что релизы Kimi «удивили Уолл-стрит» и показали, как Китай может конкурировать с американскими компаниями.</p>
+    <p>Вишенка: издание <a href="https://www.csoonline.com/article/4206782/moonshots-kimi-ai-model-has-also-escaped-from-a-test-environment.html">CSO Online</a> писало о том, что K3 «сбежал» из тестовой кибербез-лаборатории, отдельный сюжет про то, что модель ведёт себя непредсказуемо.</p>
+    <p>На этом фоне особенно иронично выглядит архитектурный факт: в K3.1 Pro используются слои Gated DeepSeek Sparse Attention, то есть флагман Kimi построен на архитектурных идеях DeepSeek. Китайская «сборная Кремниевой долины» в одном пайплайне: архитектура DeepSeek, обвинения в дистилляции Claude, конкуренция с OpenAI, и общий дефицит GPU у всех.</p>
+    <p>Впрочем, всё это не отменяет открытого доступа к модели: 23 октября Moonshot анонсировала K3.1 Pro, 2–4 ноября выложила веса на <a href="https://huggingface.co/moonshotai/Kimi-K3.1-Pro">Hugging Face</a> (модель сразу взлетела в топ трендов HF; к концу ноября у карточки уже 2,45 тыс. лайков, библиотека весов открыта), с бенчмарками уровня фронтира: 65,7 на Terminal-Bench 4.0, 94,2 на GPQA-Diamond, 92,1 на BrowseComp. Лицензия, правда, кастомная, с ограничениями коммерческого использования: «открытые веса» со звёздочкой.</p>
+    <h2 class="article-h2" id="sec-deepseek-pryachetsya-kimi-izvinyaetsya">DeepSeek прячется, Kimi извиняется</h2>
+    <p>Теперь, контраст, ради которого всё это собрано.</p>
+    <p><strong>DeepSeek</strong> в ноябре вёл себя тихо. Лимиты модели DeepSeek для бесплатных вступили в силу 14–16 ноября, и с тех пор это главный сюжет вокруг сервиса. Лимиты токенов DeepSeek считаются в знаках, а не в токенах, и это путает ещё сильнее. Лимиты модели Kimi на этом фоне выглядят честнее, но работают так же жёстко. Пользователи модели DeepSeek получили ровно тот же эффект: неожиданную квоту вместо объяснений. Лимиты нейросети DeepSeek касаются только бесплатного контура, а токены нейросети DeepSeek при этом не подорожали. Смена домена или эндпоинта ничего не меняет, меняется только вывеска. Как я разбирал в прошлой статье, нагрузка на бесплатный тариф выросла в 8,6 раза, и сервис ответил классической криптокитовой стратегией: молча урезать лимиты бесплатным, не объяснять, не извиняться, не компенсировать. Стратегия «прятаться под корягу»: минимум публичности, минимум обязательств, переждать. Платить за это приходится репутацией: пользователь узнаёт о лимите только когда в него упирается.</p>
+    <p><strong>Kimi</strong>, наоборот. Признание проблемы через день после релиза, компенсация в 25% квоты, публичные объяснения архитектуры расхода в блогах. Она признаёт проблему, но не может её решить: модель слишком «умная» по расходу, инфраструктура слишком хрупкая по uptime, экономика подписки не сходится. Извинения превращаются в регулярный ритуал, а компенсация, в стоимость ведения бизнеса.</p>
+    <p>Это две стратегии одной и той же болезни. Рост популярности китайских флагманов в 2026 году идёт быстрее, чем строится compute, и каждый сервис выбирает, кому больнее: у DeepSeek боль смещена на бесплатных пользователей, у Kimi на платных. А по совокупности страдают все: 92% uptime у прошлого флагмана и молчащие лимиты это два скрина одной и той же нехватки GPU.</p>
+    <p>Отдельно о будущем этого сюжета: есть основания думать, что пик нагрузки на DeepSeek уже прошёл и лимиты могут расширять обратно, тогда контраст перевернётся, и это будет уже другая статья. За этим следим.</p>
+    <h2 class="article-h2" id="sec-chto-eto-znachit-dlya-polzovatelya">Что это значит для пользователя</h2>
+    <p><strong>Для бесплатных:</strong> пользователи модели Kimi получают самый щедрый доступ к агентной модели на рынке, но с оговорками: очереди в часы пик, сбои в пиковые дни, непредсказуемый расход лимитов в агентных сценариях. Работает до первого «часа пик».</p>
+    <p><strong>Для платных:</strong> вы платите не за «безлимит», а за <em>право упираться в квоту быстрее</em>. Оплата открывает модель, но не мощности; в чате с нейросетью 5-часовое окно сгорает от суб-агентов, которых вы не запрашивали; «часы пик» обходят и платников. Любой ИИ-чат и любой чат с нейросетью в 2026-м это очередь за мощностями, и Kimi здесь не исключение. Это не баг, это новая реальность AI-подписок: модель стала умнее, но её «ум» стоит токенов, которых у провайдера не хватает.</p>
+    <p><strong>Для рынка:</strong> нейросеть Kimi не исключение, а громкий симптом. Ни новая фича, ни шифрование канала не отменяют физику: мощность конечна. Программирование здесь упирается не в синтаксис, а в бюджет. Любой, кто продаёт «почти передовой интеллект» за фиксированную месячную цену, упирается в одну и ту же математику: «умнее» значит «больше токенов на задачу». Стоимость токена падает (до −80% за полгода у OpenAI и Anthropic, отчасти под давлением дешёвых open-weight вроде DeepSeek и Kimi). А стоимость реального workflow растёт. Единица измерения в индустрии меняется на глазах: от «токен» к «выполненная задача».</p>
+    <p>Практика простая. Держать бэкап переписки, смотреть логи и пинг, хранить свой конфиг, а при своём железе поднять библиотеку весов на собственном хостинге. Данные о нагрузке открыты, веб-интерфейс и приложение работают, но запасной вариант всё равно нужен. Разработчику это даёт предсказуемость, остальным спокойствие. Так я собрал своё Android-приложение для Z.ai (об этом, прошлая статья про 15 редакций и GLM 5.4), и так же по частям считаю лимиты DeepSeek (полный разбор, в предыдущем выпуске). Опираться на единственного провайдера, значит жить в его очередях.</p>
+    <figure>
+        <img src="img/025-05-kimi-polzovatel-nochnaya-rabota.png" alt="Работа с нейросетью Kimi ночью: ноутбук, локальные вычисления и ожидание ответа из-за лимитов">
+        <figcaption>Пока одни считают параметры, другие в три часа ночи ждут ответа: нейросеть упирается в квоту, а не в возможности.</figcaption>
+    </figure>
+    <p><strong>Итог:</strong> DeepSeek выбрал тишину, Kimi выбрала извинения. Но оба упираются в общий предел: <strong>железо не масштабируется так же быстро, как запросы</strong>. Прошлое поколение Kimi K3 держит 92% uptime, актуальное: 99,69%; бесплатная нейросеть у обоих сервисов живёт по остаточному принципу, DeepSeek молчит про лимиты, нейросеть OpenAI и Anthropic срезают цены в надежде удержать пользователя, которого всё труднее обслуживать. Китайские нейросети растут быстрее, чем строится инфраструктура, и предел у всех общий. Пользователю остаётся простая тактика: считать токены, знать свои лимиты и держать второй сервис и второго ИИ-агента наготове, потому что «задыхается» в 2026-м не только Kimi.</p>
+    <h2 class="article-h2" id="sec-istochniki">Источники</h2>
+    <p class="src-group"><strong>Официальное</strong></p>
+    <ul><li><a href="https://status.moonshot.cn">Статус-борд Moonshot AI</a></li><li><a href="https://www.kimi.com/en/help/membership/membership-update-rules">Правила квот подписки Kimi</a></li><li><a href="https://huggingface.co/moonshotai/Kimi-K3.1-Pro">Карточка модели K3.1 Pro на Hugging Face</a></li></ul>
+    <p class="src-group"><strong>Мониторинг и данные</strong></p>
+    <ul><li><a href="https://traycer.ai/status/kimi">Агрегатор Traycer</a></li><li><a href="https://instatus.com/now/kimi.com/outages/2026-11-19-09">instatus: сбой 19 ноября</a></li></ul>
+    <p class="src-group"><strong>СМИ и разборы</strong></p>
+    <ul><li><a href="https://seekingalpha.com/news/4657086-moonshot-ai-resets-kimi-k3_1-pro-quotas-after-user-complaints">Seeking Alpha: компенсация квот K3.1 Pro</a></li><li><a href="https://eu.36kr.com/en/p/4039236862514306">36kr: цены K3.1 Pro</a></li><li><a href="https://www.requesty.ai/blog/kimi-k3-1-pro-pricing-api">Requesty: экономика агентов</a></li><li><a href="https://www.csoonline.com/article/4206782/moonshots-kimi-ai-model-has-also-escaped-from-a-test-environment.html">CSO Online: побег K3 из тестовой лаборатории</a></li><li><a href="https://www.fontanka.ru/2026/11/17/76772095">Фонтанка: сбои 17 ноября</a></li><li><a href="https://www.reddit.com/r/kimi/comments/1vnl28x/kimi_code_has_reduced_weekly_usage_limits_to_37">Reddit r/kimi: лимиты Kimi Code</a></li><li><a href="https://omidsaffari.com/blog/kimi-pricing">omidsaffari: тарифы Kimi</a></li><li><a href="https://emergent.sh/news/moonshot-releases-kimi-k3-1-pro-2-8t-moe-1m">Emergent: архитектура K3.1 Pro</a></li><li><a href="https://www.morphllm.com/kimi-k3-1">Morph: даты выкладки весов</a></li><li><a href="https://dentro.de/ai/news/moonshot-ai">Dentro: таймлайн релизов</a></li><li><a href="https://www.bbc.com/news/articles/cy9w4q8pgp0o">BBC: релиз K3</a></li><li><a href="https://www.thehansindia.com/tech/kimi-k3-takes-the-internet-by-storm-moonshot-ai-halts-sign-ups-after-hitting-gpu-capacity-limits-1099342">Hans India: остановка регистраций</a></li><li><a href="https://en.wikipedia.org/wiki/Kimi_(AI">Wikipedia: история линейки Kimi</a>)</li></ul>
+    <div class="article-tags"><span>#Kimi</span><span>#DeepSeek</span><span>#нейросети</span><span>#лимиты</span><span>#ИИагенты</span><span>#KimiCode</span><span>#Moonshot</span></div>
+    <div class="article-nav">
+        <a class="article-nav-link" href="https://archeonzero.ru/articles/ii-kak-katalizator/deepseek-limity.html"><span class="article-nav-arrow">←</span><span><span class="article-nav-title">Предыдущая: Лимиты DeepSeek: что ограничили и что делать</span></span></a>
+    </div>
+</article>
+<aside class="sb sb-right" aria-label="Оглавление статьи">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-moy-zahod-v-kimi">Мой заход в Kimi</a>
+        <a href="#sec-chto-sluchilos-19-noyabrya">Что случилось 19 ноября</a>
+        <a href="#sec-hronologiya-mesyac-shtorma">Хронология: месяц шторма</a>
+        <a href="#sec-cifra-kotoraya-vse-obyasnyaet">Цифра, которая всё объясняет</a>
+        <a href="#sec-platnye-tozhe-zadyhayutsya">Платные тоже задыхаются</a>
+        <a href="#sec-pochemu-eto-proishodit-umnaya-model-prozhorlivaya-model">Почему это происходит: «умная» модель = «прожорливая» модель</a>
+        <a href="#sec-besplatnyy-tarif-chto-ostalos">Бесплатный тариф: что осталось</a>
+        <a href="#sec-eto-ne-edinstvennyy-front-distillyacionnyy-skandal">Это не единственный фронт: дистилляционный скандал</a>
+        <a href="#sec-deepseek-pryachetsya-kimi-izvinyaetsya">DeepSeek прячется, Kimi извиняется</a>
+        <a href="#sec-chto-eto-znachit-dlya-polzovatelya">Что это значит для пользователя</a>
+        <a href="#sec-istochniki">Источники</a>
+    </div>
+</aside>
+<button class="toc-toggle" aria-expanded="false" aria-controls="tocPanel" title="Содержание статьи">☰</button>
+<div class="toc-panel" id="tocPanel" role="navigation" aria-label="Содержание статьи (мобильное)">
+    <h3>Содержание статьи</h3>
+    <div class="toc">
+        <a href="#sec-moy-zahod-v-kimi">Мой заход в Kimi</a>
+        <a href="#sec-chto-sluchilos-19-noyabrya">Что случилось 19 ноября</a>
+        <a href="#sec-hronologiya-mesyac-shtorma">Хронология: месяц шторма</a>
+        <a href="#sec-cifra-kotoraya-vse-obyasnyaet">Цифра, которая всё объясняет</a>
+        <a href="#sec-platnye-tozhe-zadyhayutsya">Платные тоже задыхаются</a>
+        <a href="#sec-pochemu-eto-proishodit-umnaya-model-prozhorlivaya-model">Почему это происходит: «умная» модель = «прожорливая» модель</a>
+        <a href="#sec-besplatnyy-tarif-chto-ostalos">Бесплатный тариф: что осталось</a>
+        <a href="#sec-eto-ne-edinstvennyy-front-distillyacionnyy-skandal">Это не единственный фронт: дистилляционный скандал</a>
+        <a href="#sec-deepseek-pryachetsya-kimi-izvinyaetsya">DeepSeek прячется, Kimi извиняется</a>
+        <a href="#sec-chto-eto-znachit-dlya-polzovatelya">Что это значит для пользователя</a>
+        <a href="#sec-istochniki">Источники</a>
+    </div>
+</div>
+    </div>
+</main>
+<footer class="site-footer">
+    <div class="container footer-grid">
+        <div class="footer-brand">
+            <svg class="brand-mark brand-mark--footer" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+                <!-- Дерево -->
+                <g class="logo-form logo-form--tree" data-form="tree">
+                    <defs>
+                        <g id="ff3">
+                            <line x1="0" y1="0" x2="0" y2="-8" stroke="var(--logo-c3)" stroke-width="1.4" stroke-linecap="round"/>
+                        </g>
+                        <g id="ff2">
+                            <line x1="0" y1="0" x2="0" y2="-12" stroke="var(--logo-c2)" stroke-width="1.8" stroke-linecap="round"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(-32) scale(0.72)"/>
+                            <use href="#ff3" transform="translate(0,-12) rotate(32) scale(0.72)"/>
+                        </g>
+                        <g id="ff1">
+                            <line x1="0" y1="0" x2="0" y2="-17" stroke="var(--logo-c1)" stroke-width="2.2" stroke-linecap="round"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(-28) scale(0.74)"/>
+                            <use href="#ff2" transform="translate(0,-17) rotate(28) scale(0.74)"/>
+                        </g>
+                    </defs>
+                    <line x1="32" y1="58" x2="32" y2="38" stroke="var(--logo-stem)" stroke-width="3" stroke-linecap="round"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(-22)"/>
+                    <use href="#ff1" transform="translate(32,38) rotate(22)"/>
+                    <circle cx="32" cy="58" r="2" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Сфера -->
+                <g class="logo-form logo-form--sphere" data-form="sphere">
+                    <defs>
+                        <g id="fs3"><circle cx="0" cy="0" r="6" stroke="var(--logo-c3)" stroke-width="1.5" fill="none"/></g>
+                        <g id="fs2">
+                            <circle cx="0" cy="0" r="12" stroke="var(--logo-c2)" stroke-width="1.8" fill="none"/>
+                            <use href="#fs3" transform="translate(0,-12) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(10.4,6) scale(0.7)"/>
+                            <use href="#fs3" transform="translate(-10.4,6) scale(0.7)"/>
+                        </g>
+                        <g id="fs1">
+                            <circle cx="0" cy="0" r="22" stroke="var(--logo-c1)" stroke-width="2.1" fill="none"/>
+                            <use href="#fs2" transform="scale(0.82)"/>
+                            <use href="#fs2" transform="translate(22,0) rotate(120) scale(0.55)"/>
+                            <use href="#fs2" transform="translate(-22,0) rotate(-120) scale(0.55)"/>
+                        </g>
+                    </defs>
+                    <use href="#fs1" transform="translate(32,32) scale(1.15)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- Глобус -->
+                <g class="logo-form logo-form--globe" data-form="globe">
+                    <defs>
+                        <g id="fg1"><ellipse cx="0" cy="0" rx="20" ry="10" stroke="var(--logo-c2)" stroke-width="1.3" fill="none"/></g>
+                    </defs>
+                    <circle cx="32" cy="32" r="24" stroke="var(--logo-c1)" stroke-width="2" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="24" ry="24" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="12" ry="24" stroke="var(--logo-c3)" stroke-width="1.1" fill="none"/>
+                    <line x1="8" y1="32" x2="56" y2="32" stroke="var(--logo-c3)" stroke-width="1.1"/>
+                    <ellipse cx="32" cy="32" rx="20" ry="10" stroke="var(--logo-stem)" stroke-width="1.1" fill="none"/>
+                    <ellipse cx="32" cy="32" rx="13" ry="5" stroke="var(--logo-c3)" stroke-width="0.9" fill="none"/>
+                    <circle cx="32" cy="32" r="2.2" fill="var(--logo-c1)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(30)"/>
+                    <use href="#fg1" transform="translate(32,32) scale(0.5) rotate(-30)"/>
+                </g>
+                <!-- Пучок дуг -->
+                <g class="logo-form logo-form--ray" data-form="ray">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#rrLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <g class="logo-form logo-form--branch" data-form="branch">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(0)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(60)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(120)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(180)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(240)"/>
+                    <use href="#bLeaf" transform="translate(32,32) rotate(300)"/>
+                    <circle cx="32" cy="32" r="1.8" fill="var(--logo-stem)"/>
+                </g>
+                <!-- ФОРМА: AZ-знак -->
+                <g class="logo-form logo-form--az" data-form="az">
+                    <circle cx="32" cy="32" r="26" stroke="var(--logo-c1)" stroke-width="1.4" fill="none"/>
+                    <path d="M 32 18 L 47 46 L 17 46 Z" fill="none" stroke="var(--logo-c1)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M 24 39 L 40 39" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 14 25 A 24 24 0 1 1 50 25" fill="none" stroke="var(--logo-c2)" stroke-width="1.3" stroke-linecap="round"/>
+                    <path d="M 18 34 A 16 16 0 1 1 46 34" fill="none" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                    <path d="M 32 6 L 35 12 L 32 15 L 29 12 Z" fill="var(--logo-c1)" stroke-linejoin="round"/>
+                    <path d="M 24 12 L 40 12" stroke="var(--logo-c3)" stroke-width="1.1" stroke-linecap="round"/>
+                </g>
+            </svg>
+            <h2 class="article-h2">Archeon<em>Zero</em></h2>
+            <p>Точка сборки: код, текст, наблюдения. С 2026 года.</p>
+        </div>
+        <div class="footer-col">
+            <h3>Разделы</h3>
+            <a href="../../index.html#proekty">Проекты</a>
+            <a href="../../index.html#stati">Статьи</a>
+            <a href="../../index.html#ploshadki">Площадки</a>
+        </div>
+        <div class="footer-col">
+            <h3>Площадки</h3>
+            <a href="https://dzen.ru/archeonzero" target="_blank">Дзен</a>
+            <a href="https://vc.ru/id6054863" target="_blank">vc.ru</a>
+            <a href="https://teletype.in/@archeonzero" target="_blank">Teletype</a>
+            <a href="https://vk.ru/archeonzeroclub" target="_blank">VK</a>
+            <a href="https://github.com/ArcheonZero" target="_blank">GitHub</a>
+        </div>
+    </div>
+    <div class="container footer-bottom">
+        <span>© 2026 Archeon Zero</span>
+        <span>7 шаблонов · выбор сохраняется</span>
+    </div>
+</footer>
+<script>
+(function(){
+  var tt=document.querySelector('.toc-toggle'), tp=document.getElementById('tocPanel');
+  if(!tt||!tp) return;
+  tt.addEventListener('click',function(){ var o=tp.classList.toggle('open'); tt.setAttribute('aria-expanded', o?'true':'false'); });
+  tp.addEventListener('click',function(e){ if(e.target&&e.target.tagName==='A'){ tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); } });
+  document.addEventListener('click',function(e){ if(!tp.classList.contains('open')) return; if(tp.contains(e.target)||tt.contains(e.target)) return; tp.classList.remove('open'); tt.setAttribute('aria-expanded','false'); });
+})();
+</script>
+<script>
+/* Переключатель шаблонов: тело страницы одно, меняется body[data-theme].
+   Активный шаблон сохраняется в localStorage, ловим ошибки (песочница). */
+(function(){
+    var THEMES = ['mono', 'term', 'paper', 'ice', 'cyan', 'soft', 'amber', 'emerald', 'amethyst'];
+    var LOGOS = ['tree', 'sphere', 'globe', 'ray', 'branch', 'az'];
+    var KEY = 'archeonzero-theme';
+    var KEY_LOGO = 'archeonzero-logo';
+    var body = document.body;
+    function apply(t){
+        if (!t || THEMES.indexOf(t) === -1) t = 'paper';
+        body.setAttribute('data-theme', t);
+        var btns = document.querySelectorAll('[data-theme-btn]');
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-theme-btn') === t ? 'true' : 'false');
+        }
+    }
+    function applyLogo(l){
+        if (!l || LOGOS.indexOf(l) === -1) l = 'tree';
+        var forms = document.querySelectorAll('.logo-form');
+        for (var i = 0; i < forms.length; i++) {
+            forms[i].style.display = (forms[i].getAttribute('data-form') === l) ? 'inline' : 'none';
+        }
+        var btns = document.querySelectorAll('[data-logo-btn]');
+        for (var j = 0; j < btns.length; j++) {
+            btns[j].setAttribute('aria-pressed', btns[j].getAttribute('data-logo-btn') === l ? 'true' : 'false');
+        }
+    }
+    var stored = null, storedLogo = null;
+    try { stored = localStorage.getItem(KEY); } catch (e) {}
+    try { storedLogo = localStorage.getItem(KEY_LOGO); } catch (e2) {}
+    apply(stored || 'paper');
+    applyLogo(storedLogo || 'tree');
+    var set = document.querySelectorAll('[data-theme-btn]');
+    for (var a = 0; a < set.length; a++) {
+        set[a].addEventListener('click', function(e){
+            var t = e.currentTarget.getAttribute('data-theme-btn');
+            apply(t);
+            try { localStorage.setItem(KEY, t); } catch (err) {}
+        });
+    }
+    var lset = document.querySelectorAll('[data-logo-btn]');
+    for (var b = 0; b < lset.length; b++) {
+        lset[b].addEventListener('click', function(e){
+            var l = e.currentTarget.getAttribute('data-logo-btn');
+            applyLogo(l);
+            try { localStorage.setItem(KEY_LOGO, l); } catch (err) {}
+        });
+    }
+    var tg = document.querySelector('.ts-toggle');
+    var switcher = document.getElementById('themeSwitcher');
+    function closeSwitcher(){ if (switcher) { switcher.classList.remove('is-open'); } if (tg) { tg.setAttribute('aria-expanded','false'); } }
+    if (tg && switcher) {
+        tg.addEventListener('click', function(){
+            var open = switcher.classList.toggle('is-open');
+            tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        // закрыть после выбора темы или логотипа
+        switcher.addEventListener('click', function(e){ if (e.target && e.target.tagName === 'BUTTON') { closeSwitcher(); } });
+        // закрыть по уходу мыши из зоны оформления
+        var zone = document.querySelector('.theme-switcher');
+        if (zone) { zone.addEventListener('mouseleave', closeSwitcher); }
+    }
+    // Плавающая кнопка-бургер «Содержание»
+    var tocToggle = document.querySelector('.toc-toggle');
+    var tocPanel = document.getElementById('tocPanel');
+    if (tocToggle && tocPanel) {
+        tocToggle.addEventListener('click', function () {
+            var open = tocPanel.classList.toggle('open');
+            tocToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+        tocPanel.addEventListener('click', function (e) {
+            if (e.target && e.target.tagName === 'A') {
+                tocPanel.classList.remove('open');
+                tocToggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+        document.addEventListener('click', function (e) {
+            if (!tocPanel.classList.contains('open')) { return; }
+            if (tocPanel.contains(e.target) || (tocToggle && tocToggle.contains(e.target))) { return; }
+            tocPanel.classList.remove('open');
+            tocToggle.setAttribute('aria-expanded', 'false');
+        });
+    }
+})();
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();
+for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=111076834', 'ym');
+ym(111076834, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/111076834" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+</body>
+</html>
